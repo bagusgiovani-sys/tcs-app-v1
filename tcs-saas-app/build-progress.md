@@ -11,9 +11,9 @@
 
 ## Phase 1 — Project Setup
 
-- [ ] Step 1: `npx create-next-app@latest . --typescript --tailwind --app --no-src-dir`
-- [ ] Step 2: Check installed versions: `npx next --version && npx tailwindcss --version`
-- [ ] Step 3: Install packages: `npm install @supabase/ssr @supabase/supabase-js framer-motion zustand @ducanh2912/next-pwa`
+- [x] Step 1: `npx create-next-app@latest . --typescript --tailwind --app --no-src-dir`
+- [x] Step 2: Check installed versions: `npx next --version && npx tailwindcss --version`
+- [x] Step 3: Install packages: `npm install @supabase/ssr @supabase/supabase-js framer-motion zustand @ducanh2912/next-pwa`
 
 ---
 
@@ -75,11 +75,12 @@
 |---------|------------|-----------------|-----------------|-------|
 | 1       | 2026-05-15 | —               | —               | Scaffold files generated |
 | 2       | 2026-05-15 | —               | —               | CLAUDE.md updated to v1.3; build-progress regenerated for 30-step plan |
+| 3       | 2026-05-15 | Steps 1–3       | —               | ultra-learn activated; project scaffolded, versions verified, packages installed |
 
 ---
 
 ## Current Status
 
-**Last completed:** —
+**Last completed:** Step 3 — core packages installed
 **Currently working on:** —
-**Next action:** Step 1 — `npx create-next-app@latest`
+**Next action:** Step 4 — extract design tokens from Figma
