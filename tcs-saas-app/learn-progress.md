@@ -26,7 +26,10 @@
 
 ## Phase 2 — Figma First
 
-- [ ] Step 4: Extract design tokens from Figma — [[CLAUDE.md#7. Design System]]
+- [ ] Step 4: Extract design tokens — two paths available:
+      **Path A — Figma MCP:** Share Figma link → Claude calls `get_design_context` → you write globals.css from output
+      **Path B — Claude Design:** Describe brand → Claude generates token set → you review + write globals.css
+      Either path leads to the same output: a complete `@theme {}` token set. — [[CLAUDE.md#7. Design System]]
 - [ ] Step 5: Set up globals.css with Tailwind v4 tokens + FOUC prevention — [[CLAUDE.md#7. Design System]]
 - [ ] Step 6: Build component inventory from Figma screens — [[CLAUDE.md#5. Project Structure]]
 

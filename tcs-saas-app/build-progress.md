@@ -19,7 +19,7 @@
 
 ## Phase 2 — Figma First (before any components or backend)
 
-- [ ] Step 4: Open Figma. Extract every design token — all colors (light + dark), font sizes/weights/line-heights, spacing, border radius, shadows, component states (default, hover, active, disabled, error).
+- [ ] Step 4: Extract design tokens — **Path A:** Figma MCP (share file link, Claude extracts via `get_design_context`) **OR Path B:** Claude Design (describe brand to Claude, Claude generates token set). See [[CLAUDE.md#15. First Steps]] for both paths.
 - [ ] Step 5: Overwrite `globals.css` (replace ALL content from create-next-app): add `@import "tailwindcss"`, `@custom-variant dark`, `@theme {}` with ALL tokens from Step 4, `.dark {}` overrides. Add FOUC prevention script in root `layout.tsx` (see Section 7).
 - [ ] Step 6: Build component inventory from Figma — go through every screen, list every reusable component (ProductCard, Button, Badge, BottomNav, etc.), sort by reuse frequency. Do NOT write code yet — just the list.
 

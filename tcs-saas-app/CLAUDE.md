@@ -895,12 +895,22 @@ export default withPWA({
 
 --- FIGMA FIRST — before any components or backend ---
 
-4.  Open Figma. Extract every design token:
+4.  Extract design tokens — choose one path:
+
+    **Path A — Figma (if you have a design file):**
+    Open Figma. Extract every token:
     - All colors (light + dark mode)
     - All font sizes, weights, line heights
     - All spacing values
     - Border radius, shadow values
     - Component states (default, hover, active, disabled, error)
+    Use the Figma MCP (share file link → Claude extracts tokens via `get_design_context`).
+
+    **Path B — Claude Design (no Figma / not satisfied with your Figma):**
+    Describe the brand feel to Claude (warm, premium, local, Indonesian, coffee).
+    Claude generates a full token set directly — colors, typography, spacing, states.
+    Review and adjust before writing globals.css.
+    The token set in `[[CLAUDE.md#7. Design System]]` was produced this way.
 
 5.  Overwrite globals.css (create-next-app already generated one — replace ALL its content):
     @import "tailwindcss", @custom-variant dark, @theme {} with ALL tokens from step 4,
