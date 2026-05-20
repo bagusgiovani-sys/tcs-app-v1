@@ -1,5 +1,5 @@
 # Learn Progress — TCS Coffee App
-> Started: 2026-05-15 | Last updated: 2026-05-15
+> Started: 2026-05-15 | Last updated: 2026-05-21
 > Tracks what I have UNDERSTOOD and WRITTEN MYSELF.
 > Different from [[build-progress.md]] — something can be built without being understood.
 
@@ -12,7 +12,7 @@
 
 ## Phase 1 — Project Setup
 
-- [x] Step 1: Scaffold Next.js project — [[CLAUDE.md#15. First Steps (in order)]] #learned
+- [x] Step 1: Scaffold Next.js project — [[CLAUDE.md#12. First Steps]] #learned
       Written: 2026-05-15
       Notes: app/ at root (no src/), App Router, TypeScript, Tailwind v4
 - [x] Step 2: Verify installed versions — [[CLAUDE.md#3. Tech Stack]] #learned
@@ -38,11 +38,11 @@
 ## Phase 3 — Backend
 
 - [ ] Step 7: Create Supabase project + all tables in order + enable RLS — [[CLAUDE.md#4. Database Schema]]
-- [ ] Step 8: Seed organization row for TCS Coffee — [[CLAUDE.md#10. Supabase Conventions]]
-- [ ] Step 9: Set up .env.local — [[CLAUDE.md#11. Environment Variables]]
+- [ ] Step 8: Seed organization row for TCS Coffee — [[schema.md]]
+- [ ] Step 9: Set up .env.local — [[CLAUDE.md#10. Environment Variables]]
 - [ ] Step 10: Configure middleware.ts — [[CLAUDE.md#6. Auth & Role System]]
-- [ ] Step 11: Set up Supabase client files — [[CLAUDE.md#10. Supabase Conventions]]
-- [ ] Step 12: Supabase CLI login + generate types — [[CLAUDE.md#10. Supabase Conventions]]
+- [ ] Step 11: Set up Supabase client files — [[schema.md#Supabase Clients]]
+- [ ] Step 12: Supabase CLI login + generate types — [[schema.md#Supabase Clients]]
 - [ ] Step 13: Seed real product data — [[CLAUDE.md#4. Database Schema]]
 
 ---
@@ -60,7 +60,7 @@
 
 - [ ] Step 18: Auth pages (/auth/login, /auth/register) — [[CLAUDE.md#6. Auth & Role System]]
 - [ ] Step 19: Customer layout + BottomNav — [[CLAUDE.md#5. Project Structure]]
-- [ ] Step 20: Menu + product pages (Server Components) — [[CLAUDE.md#12. Coding Conventions]]
+- [ ] Step 20: Menu + product pages (Server Components) — [[CLAUDE.md#11. What NOT To Do]]
 - [ ] Step 21: Cart (Zustand store) — [[CLAUDE.md#2. Architecture Decision Log]]
 - [ ] Step 22: Checkout + QRIS display — [[CLAUDE.md#9. Key Business Logic]]
 - [ ] Step 23: Order status page (Supabase Realtime) — [[CLAUDE.md#9. Key Business Logic]]
@@ -72,10 +72,10 @@
 
 ## Phase 6 — Polish & Deploy
 
-- [ ] Step 27: PWA config + manifest + icons — [[CLAUDE.md#14. Deployment]]
+- [ ] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.ts`) + icons — [[first-steps.md]]
 - [ ] Step 28: Dark mode polish pass — [[CLAUDE.md#7. Design System]]
-- [ ] Step 29: Full QA on 375px mobile viewport — [[CLAUDE.md#16. Project Context for Claude Code]]
-- [ ] Step 30: Deploy to Vercel — [[CLAUDE.md#14. Deployment]]
+- [ ] Step 29: Full QA on 375px mobile viewport — [[CLAUDE.md#13. Project Context]]
+- [ ] Step 30: Deploy to Vercel — [[first-steps.md]]
 
 ---
 

@@ -1,5 +1,5 @@
 # Build Progress — TCS Coffee App
-> Started: 2026-05-15 | Last updated: 2026-05-15
+> Started: 2026-05-15 | Last updated: 2026-05-21
 > Read this at the start of EVERY Claude Code session before touching any file.
 
 ## Status Legend
@@ -19,19 +19,19 @@
 
 ## Phase 2 — Figma First (before any components or backend)
 
-- [ ] Step 4: Extract design tokens — **Path A:** Figma MCP (share file link, Claude extracts via `get_design_context`) **OR Path B:** Claude Design (describe brand to Claude, Claude generates token set). See [[CLAUDE.md#15. First Steps]] for both paths.
-- [ ] Step 5: Overwrite `globals.css` (replace ALL content from create-next-app): add `@import "tailwindcss"`, `@custom-variant dark`, `@theme {}` with ALL tokens from Step 4, `.dark {}` overrides. Add FOUC prevention script in root `layout.tsx` (see Section 7).
-- [ ] Step 6: Build component inventory from Figma — go through every screen, list every reusable component (ProductCard, Button, Badge, BottomNav, etc.), sort by reuse frequency. Do NOT write code yet — just the list.
+- [x] Step 4: Extract design tokens — **Path A:** Figma MCP (share file link, Claude extracts via `get_design_context`) **OR Path B:** Claude Design (describe brand to Claude, Claude generates token set). See [[CLAUDE.md#12. First Steps]] for both paths.
+- [x] Step 5: Overwrite `globals.css` (replace ALL content from create-next-app): add `@import "tailwindcss"`, `@custom-variant dark`, `@theme {}` with ALL tokens from Step 4, `.dark {}` overrides. Add FOUC prevention script in root `layout.tsx` (see Section 7).
+- [x] Step 6: Build component inventory from Figma — go through every screen, list every reusable component (ProductCard, Button, Badge, BottomNav, etc.), sort by reuse frequency. Do NOT write code yet — just the list.
 
 ---
 
 ## Phase 3 — Backend
 
-- [ ] Step 7: Set up Supabase project. Create all tables from CLAUDE.md Section 4 IN THE ORDER LISTED. Enable RLS on every table.
-- [ ] Step 8: Create organization row for TCS Coffee. Note the UUID.
-- [ ] Step 9: Set up `.env.local` with all variables from Section 11.
-- [ ] Step 10: Configure `middleware.ts` for session refresh and route protection (see Section 6 pseudocode).
-- [ ] Step 11: Set up `lib/supabase/client.ts` and `lib/supabase/server.ts` (see Section 10 code examples).
+- [x] Step 7: Set up Supabase project. Create all tables from schema.md IN THE ORDER LISTED. Enable RLS on every table.
+- [x] Step 8: Create organization row for TCS Coffee. Note the UUID.
+- [x] Step 9: Set up `.env.local` with all variables from CLAUDE.md Section 10.
+- [x] Step 10: Configure `middleware.ts` for session refresh and route protection (see Section 6 pseudocode).
+- [x] Step 11: Set up `lib/supabase/client.ts` and `lib/supabase/server.ts` (see schema.md Supabase Clients section).
 - [ ] Step 12: Log in to Supabase CLI (`npx supabase login`), then generate types: `npx supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/supabase/types.ts`
 - [ ] Step 13: Seed real data — at minimum 1 organization row + 6–8 products across categories.
 
@@ -62,8 +62,8 @@
 
 ## Phase 6 — Polish & Deploy
 
-- [ ] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.json`), icons.
-- [ ] Step 28: Dark mode polish pass — verify every component in both light and dark modes.
+- [ ] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.ts`), icons (`public/icons/icon-192.png` + `icon-512.png`).
+- [ ] Step 28: Dark mode polish pass — verify every component in all 4 theme states (TCS light, TCS dark, Vibe light, Vibe dark).
 - [ ] Step 29: Full QA on mobile viewport (375px) — test thumb reach, WhatsApp link open.
 - [ ] Step 30: Deploy to Vercel. Set all env vars in Vercel dashboard.
 
@@ -76,11 +76,12 @@
 | 1       | 2026-05-15 | —               | —               | Scaffold files generated |
 | 2       | 2026-05-15 | —               | —               | CLAUDE.md updated to v1.3; build-progress regenerated for 30-step plan |
 | 3       | 2026-05-15 | Steps 1–3       | —               | ultra-learn activated; project scaffolded, versions verified, packages installed |
+| 4       | 2026-05-21 | Steps 4–6       | —               | Figma tokens extracted via MCP; globals.css written; 27-component inventory in design.md |
 
 ---
 
 ## Current Status
 
-**Last completed:** Step 3 — core packages installed
+**Last completed:** Step 6 — component inventory built (27 components, 4 tiers in design.md)
 **Currently working on:** —
-**Next action:** Step 4 — extract design tokens from Figma
+**Next action:** Step 7 — set up Supabase project + create all tables from schema.md + enable RLS

@@ -1,26 +1,55 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* TCS MODE — warm, earthy, premium Indonesian coffee */
+/* Tokens extracted from Figma: figma.com/design/YnoRI1Vvi5NYeWFu2C95qb */
+@theme {
+  /* Colors */
+  --color-brand-bg:        #FAF7F2;
+  --color-brand-surface:   #F0EBE0;
+  --color-brand-card:      #FFFFFF;
+  --color-brand-border:    #E0CCB0;
+  --color-brand-muted:     #E8D5B8;
+  --color-brand-text:      #1A0F0A;
+  --color-brand-subtext:   #7A4A2A;
+  --color-brand-accent:    #CE9760;
+  --color-brand-on-accent: #39260B;
+
+  /* Typography */
+  --font-sans:    'Poppins', sans-serif;
+  --font-display: 'Inter', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* TCS DARK MODE */
+.dark {
+  --color-brand-bg:        #3A2210;
+  --color-brand-surface:   #543A20;
+  --color-brand-card:      #6B4928;
+  --color-brand-border:    #7A5A35;
+  --color-brand-muted:     #A07040;
+  --color-brand-text:      #FFFFFF;
+  --color-brand-subtext:   #E3E3E3;
+  --color-brand-accent:    #CE9760;
+  --color-brand-on-accent: #39260B;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* VIBE MODE — POST-MVP */
+.vibe {
+  --color-brand-bg:        #0D0D0D;
+  --color-brand-surface:   #1A1A2E;
+  --color-brand-card:      #16213E;
+  --color-brand-border:    #0F3460;
+  --color-brand-text:      #EAEAEA;
+  --color-brand-subtext:   #A8A8B3;
+  --color-brand-accent:    #FF6B6B;
+  --color-brand-on-accent: #FFFFFF;
 }
 
+/* Base */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-brand-bg);
+  color: var(--color-brand-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
