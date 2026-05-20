@@ -4,7 +4,13 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(start \"C:\\\\Users\\\\kodec\\\\.claude\\\\usage-data\\\\report-2026-05-20-170841.html\")"
+      "Bash(start \"C:\\\\Users\\\\kodec\\\\.claude\\\\usage-data\\\\report-2026-05-20-170841.html\")",
+      "mcp__plugin_figma_figma__get_metadata",
+      "mcp__plugin_figma_figma__get_variable_defs",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(find app *)",
+      "Bash(dir /s /b app)",
+      "Bash(npx tsc *)"
     ]
   }
 }

@@ -48,15 +48,15 @@
 
 ## Phase 5 — Pages (wire components to real data)
 
-- [ ] Step 18: Build auth pages (`/auth/login`, `/auth/register`).
-- [ ] Step 19: Build customer layout with bottom nav (`app/(customer)/layout.tsx` + `BottomNav`).
-- [ ] Step 20: Build menu + product pages (public, Server Component, real Supabase data).
-- [ ] Step 21: Build cart (Zustand store in `lib/stores/cart.ts`).
-- [ ] Step 22: Build checkout + QRIS display.
-- [ ] Step 23: Build order status page (Supabase Realtime subscription).
-- [ ] Step 24: Build admin layout + order queue.
-- [ ] Step 25: Build POS view.
-- [ ] Step 26: Build loyalty + vouchers.
+- [x] Step 18: Build auth pages (`/auth/login`, `/auth/register`).
+- [x] Step 19: Build customer layout with bottom nav (`app/(customer)/layout.tsx` + `BottomNav`).
+- [x] Step 20: Build menu + product pages (public, Server Component, real Supabase data).
+- [x] Step 21: Build cart (Zustand store in `lib/stores/cart.ts`).
+- [x] Step 22: Build checkout + QRIS display.
+- [x] Step 23: Build order status page (Supabase Realtime subscription).
+- [x] Step 24: Build admin layout + order queue.
+- [x] Step 25: Build POS view.
+- [x] Step 26: Build loyalty + vouchers.
 
 ---
 
@@ -82,6 +82,6 @@
 
 ## Current Status
 
-**Last completed:** Step 17 — all 20 components built (ui/customer/admin/pos)
-**Currently working on:** Step 18 — auth pages
-**Next action:** Step 18 — build /auth/login + /auth/register pages
+**Last completed:** Step 26 — all pages built (auth, customer, admin, POS, loyalty)
+**Currently working on:** Step 27 — PWA config
+**Next action:** Step 27 — PWA config (next.config.ts, manifest.ts, icons)
