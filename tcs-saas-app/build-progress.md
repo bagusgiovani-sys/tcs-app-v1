@@ -33,16 +33,16 @@
 - [x] Step 10: Configure `middleware.ts` for session refresh and route protection (see Section 6 pseudocode).
 - [x] Step 11: Set up `lib/supabase/client.ts` and `lib/supabase/server.ts` (see schema.md Supabase Clients section).
 - [ ] Step 12: Log in to Supabase CLI (`npx supabase login`), then generate types: `npx supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/supabase/types.ts`
-- [ ] Step 13: Seed real data — at minimum 1 organization row + 6–8 products across categories.
+- [x] Step 13: Seed real data — at minimum 1 organization row + 6–8 products across categories.
 
 ---
 
 ## Phase 4 — Components (presentational only, no data fetching)
 
-- [ ] Step 14: Build `/components/ui/` — Button, Input, Badge, Card, Sheet, Skeleton, Toast. Accept props only. Zero Supabase queries.
-- [ ] Step 15: Build customer feature components — ProductCard, CartItem, OrderStatusBadge, LoyaltyCard, QRISDisplay, BottomNav, CategoryTabs. Accept props only. No data fetching inside components.
-- [ ] Step 16: Build admin feature components — OrderCard, OrderQueue, ProductForm, Sidebar, StatCard. Accept props only.
-- [ ] Step 17: Build POS components — MenuGrid, OrderBuilder, POSQRISModal. Accept props only.
+- [x] Step 14: Build `/components/ui/` — Button, Input, Badge, Card, Sheet, Skeleton, Toast. Accept props only. Zero Supabase queries.
+- [x] Step 15: Build customer feature components — ProductCard, CartItem, OrderStatusBadge, LoyaltyCard, QRISDisplay, BottomNav, CategoryTabs. Accept props only. No data fetching inside components.
+- [x] Step 16: Build admin feature components — OrderCard, OrderQueue, ProductForm, Sidebar, StatCard. Accept props only.
+- [x] Step 17: Build POS components — MenuGrid, OrderBuilder, POSQRISModal. Accept props only.
 
 ---
 
@@ -82,6 +82,6 @@
 
 ## Current Status
 
-**Last completed:** Step 6 — component inventory built (27 components, 4 tiers in design.md)
-**Currently working on:** —
-**Next action:** Step 7 — set up Supabase project + create all tables from schema.md + enable RLS
+**Last completed:** Step 17 — all 20 components built (ui/customer/admin/pos)
+**Currently working on:** Step 18 — auth pages
+**Next action:** Step 18 — build /auth/login + /auth/register pages
