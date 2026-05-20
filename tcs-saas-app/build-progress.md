@@ -32,7 +32,7 @@
 - [x] Step 9: Set up `.env.local` with all variables from CLAUDE.md Section 10.
 - [x] Step 10: Configure `middleware.ts` for session refresh and route protection (see Section 6 pseudocode).
 - [x] Step 11: Set up `lib/supabase/client.ts` and `lib/supabase/server.ts` (see schema.md Supabase Clients section).
-- [ ] Step 12: Log in to Supabase CLI (`npx supabase login`), then generate types: `npx supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/supabase/types.ts`
+- [x] Step 12: Log in to Supabase CLI (`npx supabase login`), then generate types: `npx supabase gen types typescript --project-id YOUR_PROJECT_ID > lib/supabase/types.ts`
 - [x] Step 13: Seed real data — at minimum 1 organization row + 6–8 products across categories.
 
 ---
