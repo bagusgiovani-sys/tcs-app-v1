@@ -5,6 +5,15 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
 
+interface CoffeeProfile {
+  body: number
+  acidity: number
+  freshness: number
+  sweetness: number
+  creaminess: number
+  aroma: number
+}
+
 interface ProductData {
   name: string
   description: string
@@ -12,6 +21,8 @@ interface ProductData {
   category: string
   isAvailable: boolean
   imageUrl?: string | null
+  coffeeProfile?: CoffeeProfile | null
+  ingredients?: Array<{ name: string; icon_slug: string }> | null
 }
 
 export async function createProduct(data: ProductData) {
@@ -24,6 +35,8 @@ export async function createProduct(data: ProductData) {
     category: data.category,
     is_available: data.isAvailable,
     image_url: data.imageUrl ?? null,
+    coffee_profile: data.coffeeProfile ?? null,
+    ingredients: data.ingredients ?? null,
   })
   if (error) throw new Error(error.message)
   revalidatePath('/admin/menu')
@@ -41,6 +54,8 @@ export async function updateProduct(id: string, data: ProductData) {
       category: data.category,
       is_available: data.isAvailable,
       ...(data.imageUrl !== undefined ? { image_url: data.imageUrl } : {}),
+      coffee_profile: data.coffeeProfile ?? null,
+      ingredients: data.ingredients ?? null,
     })
     .eq('id', id)
     .eq('shop_id', SHOP_ID)
