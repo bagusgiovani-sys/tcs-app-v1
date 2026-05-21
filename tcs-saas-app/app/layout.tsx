@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import SplashScreen from "@/components/SplashScreen";
+import ClientShell from "./client-shell";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -54,8 +54,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-brand-bg text-brand-text font-sans">
-        <SplashScreen />
-        {children}
+        <ClientShell>{children}</ClientShell>
       </body>
     </html>
   );

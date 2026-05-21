@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   },
   {
     href: '/cart',
-    label: 'Keranjang',
+    label: 'order',
     icon: (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
@@ -62,13 +62,8 @@ export default function BottomNav() {
     <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center px-5 pb-6">
       {/* Pill — always dark warm brown regardless of mode */}
       <nav
-        className="relative w-full max-w-[430px] h-[64px] rounded-[32px] flex items-center"
-        style={{
-          background: 'var(--color-brand-card)',
-          backgroundColor: '#3D2210',
-          overflow: 'visible',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.28)',
-        }}
+        className="relative w-full max-w-[430px] h-[64px] rounded-[32px] flex items-center bg-brand-card"
+        style={{ overflow: 'visible', boxShadow: '0 8px 40px rgba(0,0,0,0.28)' }}
       >
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.href)
@@ -84,7 +79,7 @@ export default function BottomNav() {
                 <motion.div
                   layoutId="navDip"
                   className="absolute rounded-full bg-brand-bg"
-                  style={{ width: 72, height: 72, top: -22, left: '50%', marginLeft: -36, zIndex: 1 }}
+                  style={{ width: 71, height: 68, top: -22, left: '50%', marginLeft: -36, zIndex: 1 }}
                   transition={SPRING}
                 />
               )}
@@ -102,7 +97,7 @@ export default function BottomNav() {
                     zIndex: 2,
                     position: 'absolute',
                     borderRadius: '50%',
-                    background: '#5A3518',
+                    background: 'var(--color-brand-surface)',
                     boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
                   }}
                   transition={SPRING}
@@ -114,12 +109,12 @@ export default function BottomNav() {
                 <div
                   style={{
                     position: 'absolute',
-                    width: 46,
-                    height: 46,
-                    borderRadius: '50%',
+                    width: 56,
+                    height: 56,
+                    borderRadius: '100%',
                     background: 'rgba(255,255,255,0.07)',
                     left: '50%',
-                    marginLeft: -23,
+                    marginLeft: -26,
                     zIndex: 0,
                   }}
                 />
@@ -133,20 +128,20 @@ export default function BottomNav() {
               >
                 <Link href={item.href} className="flex flex-col items-center gap-[3px]">
                   <motion.span
-                    animate={{ y: active ? -12 : 0 }}
+                    animate={{ y: active ? -18 : 0 }}
                     transition={SPRING}
-                    style={{ color: active ? '#CE9760' : 'rgba(255,255,255,0.45)' }}
+                    style={{ color: active ? 'var(--color-brand-accent)' : 'var(--color-brand-subtext)' }}
                   >
                     {item.icon}
                   </motion.span>
                   <motion.span
-                    animate={{ y: active ? -12 : 0 }}
+                    animate={{ y: active ? -18 : -0 }}
                     transition={SPRING}
                     style={{
                       fontSize: 9,
                       fontWeight: 600,
                       fontFamily: 'var(--font-sans)',
-                      color: active ? '#CE9760' : 'rgba(255,255,255,0.45)',
+                      color: active ? 'var(--color-brand-accent)' : 'var(--color-brand-subtext)',
                     }}
                   >
                     {item.label}
@@ -154,11 +149,11 @@ export default function BottomNav() {
                   {isCart && cartCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
-                      animate={{ scale: 1, y: active ? -12 : 0 }}
+                      animate={{ scale: 0, y: active ? -12 : 0 }}
                       transition={SPRING}
                       style={{
                         position: 'absolute',
-                        top: -6,
+                        top: -8,
                         right: -8,
                         width: 16,
                         height: 16,

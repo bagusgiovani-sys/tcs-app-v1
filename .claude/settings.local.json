@@ -10,7 +10,21 @@
       "mcp__plugin_figma_figma__get_design_context",
       "Bash(find app *)",
       "Bash(dir /s /b app)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git commit -m 'docs: mark Step 12 complete \\(types generated\\) *)",
+      "Bash(npm run *)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Bash(del app\\\\page.tsx)",
+      "Bash(del public\\\\next.svg)",
+      "Bash(del public\\\\vercel.svg)",
+      "mcp__plugin_playwright_playwright__browser_resize",
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "mcp__plugin_playwright_playwright__browser_console_messages",
+      "PowerShell(Start-Process -FilePath \"cmd.exe\" -ArgumentList '/c cd \"C:\\\\Exodus\\\\Projects\\\\TCS App\\\\tcs-saas-app\" && npm run dev -- --webpack > C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\tcs-dev.log 2>&1' -WindowStyle Hidden; Start-Sleep -Seconds 6; Get-Content \"C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\tcs-dev.log\" | Select-Object -Last 8)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Start-Sleep -Seconds 3; Get-Content \"C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\tcs-dev2.log\" | Select-String -Pattern \"error|Error\" | Where-Object { $_ -notmatch \"middleware|lockfile|tracingRoot|Turbopack|webpack\" } | Select-Object -Last 5)",
+      "PowerShell(New-Item *)"
     ]
   }
 }

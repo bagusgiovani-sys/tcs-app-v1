@@ -1,0 +1,204 @@
+/* components/splash/splash.module.css
+ * Phase-driven animation classes for the TCS paper-pop splash.
+ * The root has data-phase="intro" | "collapse" | "zoom" | "done".
+ * Children read that phase and apply transforms accordingly.
+ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  perspective: 1400px;
+  background: radial-gradient(120% 90% at 50% 45%, var(--tcs-bg, #fbe3c2) 0%, var(--tcs-bg2, #f7cc8f) 70%);
+  font-family: var(--tcs-font, "Archivo", system-ui, sans-serif);
+  color: var(--tcs-ink, #2d1810);
+  /* Fade the whole splash on zoom phase */
+  transition: opacity 600ms ease 250ms;
+  opacity: 1;
+}
+.root[data-phase="zoom"],
+.root[data-phase="done"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The 3D parallax scene wrapper */
+.scene {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 240ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+/* Floating idle animation for all paper elements */
+.float {
+  animation: tcs-floaty 6s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes tcs-floaty {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(var(--rot, 0deg)); }
+  50%      { transform: translate3d(0, -10px, 0) rotate(calc(var(--rot, 0deg) + 2deg)); }
+}
+
+/* Spinning burst rays */
+.spin {
+  animation: tcs-spin 60s linear infinite;
+  transform-origin: center;
+}
+.spinRev { animation: tcs-spin 90s linear infinite reverse; transform-origin: center; }
+@keyframes tcs-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Paper drop shadow stacks */
+.paper {
+  filter: drop-shadow(0 10px 0 rgba(26, 13, 5, 0.18))
+          drop-shadow(0 18px 14px rgba(26, 13, 5, 0.22));
+}
+.paperSm {
+  filter: drop-shadow(0 6px 0 rgba(26, 13, 5, 0.18))
+          drop-shadow(0 10px 8px rgba(26, 13, 5, 0.2));
+}
+
+/* ────────── COLLAPSE PHASE ──────────
+ * Coffee elements scale toward 0 and translate to the center as if
+ * being sucked into the logo card. Driven by CSS vars on each item
+ * so we can give each one its own pull vector.
+ */
+.collapsible {
+  transition:
+    transform 900ms cubic-bezier(0.5, 0, 0.75, 0),
+    opacity   700ms ease-in 200ms;
+}
+.root[data-phase="collapse"] .collapsible,
+.root[data-phase="zoom"] .collapsible {
+  transform: translate(var(--collapse-x, 0), var(--collapse-y, 0)) scale(0) rotate(var(--collapse-r, 360deg));
+  opacity: 0;
+}
+
+/* Burst rays fade + accelerate on collapse */
+.root[data-phase="collapse"] .rays,
+.root[data-phase="zoom"] .rays {
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.rays { transition: opacity 600ms ease; }
+
+/* Halftones fade out */
+.ht { transition: opacity 500ms ease; }
+.root[data-phase="collapse"] .ht,
+.root[data-phase="zoom"] .ht { opacity: 0; }
+
+/* ────────── LOGO CARD ──────────
+ * The card holds the TCS logo. During collapse it nudges in slightly,
+ * during zoom it scales up dramatically as we fade the whole splash.
+ */
+.logoCard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(220px, 28vw, 380px);
+  aspect-ratio: 1;
+  border-radius: 30px;
+  background: var(--tcs-cream, #fff6e0);
+  border: 4px solid var(--tcs-ink, #2d1810);
+  display: grid;
+  place-items: center;
+  box-shadow:
+    8px 8px 0 var(--tcs-ink, #2d1810),
+    14px 14px 0 var(--tcs-coral, #ff5e5e),
+    20px 20px 0 var(--tcs-ink, #2d1810);
+  transform: translate(-50%, -50%) translateZ(160px) scale(1);
+  transition:
+    transform 900ms cubic-bezier(0.6, -0.05, 0.25, 1.6),
+    box-shadow 600ms ease;
+  transform-style: preserve-3d;
+}
+.logoCard::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 2px dashed var(--tcs-ink, #2d1810);
+  opacity: 0.35;
+  border-radius: 20px;
+  pointer-events: none;
+}
+.logoCard img {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 0 rgba(26, 13, 5, 0.25));
+  transition: transform 700ms ease;
+}
+
+/* Collapse phase: card snaps slightly bigger + loses its offset shadow stack
+ * (the "book closes" — paper pages disappear into the cover) */
+.root[data-phase="collapse"] .logoCard {
+  transform: translate(-50%, -50%) translateZ(220px) scale(1.08) rotate(-2deg);
+  box-shadow:
+    4px 4px 0 var(--tcs-ink, #2d1810),
+    6px 6px 0 var(--tcs-ink, #2d1810);
+}
+
+/* Zoom phase: card scales up massively, charging at the camera */
+.root[data-phase="zoom"] .logoCard {
+  transform: translate(-50%, -50%) translateZ(600px) scale(14);
+  box-shadow: none;
+  transition:
+    transform 900ms cubic-bezier(0.7, 0, 0.84, 0),
+    box-shadow 200ms ease;
+}
+.root[data-phase="zoom"] .logoCard img {
+  transform: scale(1.05);
+}
+
+/* Tag stickers on the logo card */
+.tag {
+  position: absolute;
+  top: -22px;
+  left: -22px;
+  background: var(--tcs-mustard, #f4b942);
+  border: 4px solid var(--tcs-ink, #2d1810);
+  color: var(--tcs-ink, #2d1810);
+  font-family: "Bowlby One SC", sans-serif;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  transform: rotate(-8deg);
+  box-shadow: 4px 4px 0 var(--tcs-ink, #2d1810);
+  letter-spacing: 1px;
+}
+.tagR {
+  left: auto;
+  right: -26px;
+  top: auto;
+  bottom: -22px;
+  background: var(--tcs-teal, #2ec4b6);
+  transform: rotate(6deg);
+}
+
+.abs { position: absolute; }
+
+.burstWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* INTRO entry — everything fades + scales in from 0 */
+.entry {
+  animation: tcs-entry 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes tcs-entry {
+  from { opacity: 0; transform: scale(0.6) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float, .spin, .spinRev, .entry { animation: none !important; }
+  .scene { transition: none; }
+}

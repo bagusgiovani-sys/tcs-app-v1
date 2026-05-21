@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]: TC
+      - heading "Buat Akun" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Pesan kopi favoritmu langsung
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: Nama Lengkap
+        - textbox "Nama kamu" [ref=e13]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Email
+        - textbox "kamu@email.com" [ref=e17]
+      - generic [ref=e18]:
+        - generic [ref=e19]: Password
+        - textbox "Min. 8 karakter" [ref=e21]
+      - button "Daftar Sekarang" [ref=e22]
+    - paragraph [ref=e23]:
+      - text: Sudah punya akun?
+      - link "Masuk" [ref=e24] [cursor=pointer]:
+        - /url: /auth/login
+  - button "Open Next.js Dev Tools" [ref=e30] [cursor=pointer]:
+    - img [ref=e31]

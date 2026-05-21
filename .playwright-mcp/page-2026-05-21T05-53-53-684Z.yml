@@ -1,0 +1,20 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e6]: TC
+      - heading "Masuk" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Selamat datang kembali
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e11]: Email
+        - textbox "kamu@email.com" [ref=e13]
+      - generic [ref=e14]:
+        - generic [ref=e15]: Password
+        - textbox "••••••••" [ref=e17]
+      - button "Masuk" [ref=e18]
+    - paragraph [ref=e19]:
+      - text: Belum punya akun?
+      - link "Daftar" [ref=e20] [cursor=pointer]:
+        - /url: /auth/register
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
