@@ -63,7 +63,7 @@
 ## Phase 6 — Polish & Deploy
 
 - [x] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.ts`), icons (`public/icons/icon-192.png` + `icon-512.png`).
-- [ ] Step 28: Dark mode polish pass — verify every component in all 4 theme states (TCS light, TCS dark, Vibe light, Vibe dark).
+- [x] Step 28: Dark mode polish pass — verify every component in all 4 theme states (TCS light, TCS dark, Vibe light, Vibe dark).
 - [ ] Step 29: Full QA on mobile viewport (375px) — test thumb reach, WhatsApp link open.
 - [ ] Step 30: Deploy to Vercel. Set all env vars in Vercel dashboard.
 
@@ -77,11 +77,13 @@
 | 2       | 2026-05-15 | —               | —               | CLAUDE.md updated to v1.3; build-progress regenerated for 30-step plan |
 | 3       | 2026-05-15 | Steps 1–3       | —               | ultra-learn activated; project scaffolded, versions verified, packages installed |
 | 4       | 2026-05-21 | Steps 4–6       | —               | Figma tokens extracted via MCP; globals.css written; 27-component inventory in design.md |
+| 5       | 2026-05-21 | Steps 7–27      | —               | Full build: Supabase, components, pages, PWA |
+| 6       | 2026-05-21 | Step 28         | —               | Dark mode QA: all 4 themes pass. Fixed: deleted boilerplate app/page.tsx, added suppressHydrationWarning. Note: products empty — verify RLS public policy in Supabase dashboard |
 
 ---
 
 ## Current Status
 
-**Last completed:** Step 27 — PWA config, manifest, placeholder icons
-**Currently working on:** Step 28 — dark mode QA
-**Next action:** Step 28 — verify all components in all 4 theme states
+**Last completed:** Step 28 — dark mode QA complete, all 4 theme states verified
+**Currently working on:** Step 29 — mobile viewport QA
+**Next action:** Step 29 — test thumb reach and WhatsApp link on 375px viewport

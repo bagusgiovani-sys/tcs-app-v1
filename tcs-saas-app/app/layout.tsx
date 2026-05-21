@@ -37,6 +37,7 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${poppins.variable} ${inter.variable} ${jetbrainsMono.variable} h-full`}
+      suppressHydrationWarning
     >
       <head>
         {/* FOUC prevention — runs before first paint */}
