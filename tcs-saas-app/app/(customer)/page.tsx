@@ -29,9 +29,11 @@ export default async function HomePage() {
     ? await supabase.from('users').select('name').eq('id', user.id).single()
     : { data: null }
 
+  const userName = profile?.name ?? (user?.user_metadata?.name as string | undefined) ?? null
+
   return (
     <PageSlide>
-      <HomeHeader userName={profile?.name ?? null} />
+      <HomeHeader userName={userName} />
       <PromoBanner />
       <div className="px-5 mt-6 flex flex-col gap-4">
         <CategoryProductList products={products ?? []} categories={CATEGORIES} />

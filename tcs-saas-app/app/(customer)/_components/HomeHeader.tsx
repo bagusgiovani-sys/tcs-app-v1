@@ -10,7 +10,7 @@ export default function HomeHeader({ userName }: { userName: string | null }) {
         </h1>
       </div>
       <Link
-        href="/auth/login"
+        href={userName ? '/profile' : '/auth/login'}
         className="w-10 h-10 rounded-full bg-brand-accent flex items-center justify-center"
       >
         <span className="font-display font-semibold text-brand-on-accent text-sm">
