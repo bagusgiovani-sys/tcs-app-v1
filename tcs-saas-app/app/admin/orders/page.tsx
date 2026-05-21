@@ -13,7 +13,7 @@ export default async function AdminOrdersPage() {
       order_items (id)
     `)
     .eq('shop_id', SHOP_ID)
-    .not('status', 'in', '("completed","cancelled")')
+    .in('status', ['pending', 'confirmed', 'preparing', 'ready'])
     .order('created_at')
 
   const mapped = (orders ?? []).map((o: any) => ({

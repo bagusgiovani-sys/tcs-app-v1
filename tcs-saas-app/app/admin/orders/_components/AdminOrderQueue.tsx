@@ -55,6 +55,7 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
           .from('orders')
           .select('id, status, type, table_number, total, created_at, payment_method, payment_status, users(name), order_items(id)')
           .eq('id', payload.new.id)
+          .eq('shop_id', SHOP_ID)
           .single()
         if (data) setOrders((prev) => [...prev, mapOrder(data)])
       })
@@ -78,7 +79,7 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
 
   async function handleStatusChange(id: string, status: OrderStatus) {
     const supabase = createClient()
-    await supabase.from('orders').update({ status }).eq('id', id)
+    await supabase.from('orders').update({ status }).eq('id', id).eq('shop_id', SHOP_ID)
     setOrders((prev) =>
       prev
         .map((o) => o.id === id ? { ...o, status } : o)
@@ -88,7 +89,7 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
 
   async function handleConfirmPayment(id: string) {
     const supabase = createClient()
-    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id)
+    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id).eq('shop_id', SHOP_ID)
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, paymentStatus: 'paid', status: 'confirmed' } : o))
   }
 

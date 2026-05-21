@@ -54,7 +54,7 @@ export default function CheckoutPage() {
 
     if (orderErr || !order) { setError('Gagal membuat pesanan'); setLoading(false); return }
 
-    await supabase.from('order_items').insert(
+    const { error: itemsErr } = await supabase.from('order_items').insert(
       items.map((item) => ({
         order_id: order.id,
         product_id: item.productId,
@@ -64,6 +64,13 @@ export default function CheckoutPage() {
         notes: item.size ? `Ukuran: ${item.size}` : null,
       }))
     )
+
+    if (itemsErr) {
+      await supabase.from('orders').delete().eq('id', order.id)
+      setError('Gagal membuat pesanan, coba lagi')
+      setLoading(false)
+      return
+    }
 
     if (paymentMethod === 'cash') {
       clear()

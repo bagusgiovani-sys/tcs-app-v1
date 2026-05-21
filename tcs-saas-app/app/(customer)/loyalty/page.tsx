@@ -11,7 +11,7 @@ export default async function LoyaltyPage() {
 
   const [{ data: profile }, { data: points }, { data: transactions }] = await Promise.all([
     supabase.from('users').select('name').eq('id', user.id).single(),
-    supabase.from('loyalty_points').select('points').eq('customer_id', user.id).eq('shop_id', SHOP_ID).single(),
+    supabase.from('loyalty_points').select('points').eq('customer_id', user.id).eq('shop_id', SHOP_ID).maybeSingle(),
     supabase.from('loyalty_transactions').select('*').eq('customer_id', user.id).eq('shop_id', SHOP_ID).order('created_at', { ascending: false }).limit(20),
   ])
 
