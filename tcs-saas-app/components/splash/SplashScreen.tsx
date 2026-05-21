@@ -125,34 +125,83 @@ export default function SplashScreen({
     return () => { timers.forEach(clearTimeout); };
   }, [mounted, phase, introMs, collapseMs, zoomMs, oncePerSession, onFinish]);
 
-  // Mouse parallax (intro only)
+  // Parallax — mouse on desktop, gyro on mobile (intro only)
   const sceneRef = React.useRef<HTMLDivElement | null>(null);
+  const [gyroBlocked, setGyroBlocked] = React.useState(false); // iOS needs tap to unlock
   React.useEffect(() => {
     if (phase !== "intro") return;
     const target = { x: 0, y: 0 };
     const current = { x: 0, y: 0 };
+    let gyroActive = false;
+
+    // DeviceOrientation handler — beta = front/back tilt, gamma = left/right
+    const onOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma === null || e.beta === null) return;
+      // gamma: -90..90 (left/right), beta: -180..180 (front/back, ~45° when held)
+      target.x = Math.max(-1, Math.min(1, e.gamma / 35));
+      target.y = Math.max(-1, Math.min(1, (e.beta - 45) / 35));
+      gyroActive = true;
+    };
+
+    // Try to attach gyro
+    const attachGyro = () => {
+      window.addEventListener("deviceorientation", onOrientation, true);
+    };
+
+    const iosRequestPermission = async () => {
+      try {
+        // @ts-expect-error — iOS 13+ non-standard API
+        const permission = await DeviceOrientationEvent.requestPermission();
+        if (permission === "granted") {
+          attachGyro();
+          setGyroBlocked(false);
+        }
+      } catch {
+        // permission request failed silently
+      }
+    };
+
+    if (typeof window !== "undefined" && "DeviceOrientationEvent" in window) {
+      // @ts-expect-error — iOS 13+ check
+      if (typeof DeviceOrientationEvent.requestPermission === "function") {
+        // iOS: needs user gesture — show tap hint
+        setGyroBlocked(true);
+        window.addEventListener("pointerdown", iosRequestPermission, { once: true });
+      } else {
+        // Android / desktop fallback — attach directly
+        attachGyro();
+      }
+    }
+
+    // Mouse fallback (only drives target when gyro hasn't fired yet)
     const onMove = (e: MouseEvent) => {
+      if (gyroActive) return;
       target.x = e.clientX / window.innerWidth - 0.5;
       target.y = e.clientY / window.innerHeight - 0.5;
     };
-    const onLeave = () => { target.x = 0; target.y = 0; };
+    const onLeave = () => { if (!gyroActive) { target.x = 0; target.y = 0; } };
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseleave", onLeave);
+
+    // RAF smoothing loop
     let raf = 0;
     const loop = () => {
-      current.x += (target.x - current.x) * 0.08;
-      current.y += (target.y - current.y) * 0.08;
+      current.x += (target.x - current.x) * 0.06;
+      current.y += (target.y - current.y) * 0.06;
       if (sceneRef.current) {
         sceneRef.current.style.transform =
-          `rotateY(${current.x * 14}deg) rotateX(${-current.y * 10}deg)`;
+          `rotateY(${current.x * 16}deg) rotateX(${-current.y * 12}deg)`;
       }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
+
     return () => {
+      window.removeEventListener("deviceorientation", onOrientation, true);
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
+      setGyroBlocked(false);
     };
   }, [phase]);
 
@@ -367,7 +416,24 @@ export default function SplashScreen({
               </div>
             ))}
 
-            {/* CENTRAL LOGO CARD — the "book" that closes + zooms */}
+            {/* iOS gyro permission hint */}
+          {gyroBlocked && (
+            <div style={{
+              position: "absolute", bottom: 40, left: 0, right: 0,
+              display: "flex", justifyContent: "center", zIndex: 9999,
+              pointerEvents: "none",
+            }}>
+              <span style={{
+                background: "rgba(45,24,16,0.75)", color: "#FFF6E0",
+                fontSize: 12, fontFamily: "var(--tcs-font, system-ui)",
+                padding: "6px 16px", borderRadius: 99, letterSpacing: "0.5px",
+              }}>
+                tap to enable motion ✦
+              </span>
+            </div>
+          )}
+
+          {/* CENTRAL LOGO CARD — the "book" that closes + zooms */}
             <div className={styles.logoCard}>
               <span className={styles.tag}>EST · TCS</span>
               <span className={`${styles.tag} ${styles.tagR}`}>SINCE BEAN ONE</span>
