@@ -1,19 +1,18 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* TCS MODE — warm, earthy, premium Indonesian coffee */
-/* Tokens extracted from Figma: figma.com/design/YnoRI1Vvi5NYeWFu2C95qb */
+/* TCS MODE — paper-pop warm palette extracted from splash screen art */
 @theme {
   /* Colors */
-  --color-brand-bg:        #FAF7F2;
-  --color-brand-surface:   #F0EBE0;
-  --color-brand-card:      #FFFFFF;
-  --color-brand-border:    #E0CCB0;
-  --color-brand-muted:     #E8D5B8;
-  --color-brand-text:      #1A0F0A;
-  --color-brand-subtext:   #7A4A2A;
-  --color-brand-accent:    #CE9760;
-  --color-brand-on-accent: #39260B;
+  --color-brand-bg:        #FBE3C2;
+  --color-brand-surface:   #F7CC8F;
+  --color-brand-card:      #FFF6E0;
+  --color-brand-border:    #E8C07A;
+  --color-brand-muted:     #EDCB88;
+  --color-brand-text:      #2D1810;
+  --color-brand-subtext:   #8B4A2C;
+  --color-brand-accent:    #F4B942;
+  --color-brand-on-accent: #2D1810;
 
   /* Typography */
   --font-sans:    'Poppins', sans-serif;
