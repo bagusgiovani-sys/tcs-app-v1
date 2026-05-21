@@ -7,8 +7,6 @@ const navItems = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/orders', label: 'Pesanan' },
   { href: '/admin/menu', label: 'Menu' },
-  { href: '/admin/vouchers', label: 'Voucher' },
-  { href: '/admin/loyalty', label: 'Loyalty' },
 ]
 
 export default function Sidebar() {

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
@@ -97,7 +98,7 @@ export default function ProfileClient({ name, email }: ProfileClientProps) {
           </div>
 
           {/* Order history */}
-          <div className="flex items-center justify-between px-4 py-4">
+          <Link href="/order/history" className="flex items-center justify-between px-4 py-4">
             <div className="flex items-center gap-3">
               <span className="text-brand-subtext">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -109,10 +110,10 @@ export default function ProfileClient({ name, email }: ProfileClientProps) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-subtext">
               <path d="M9 18l6-6-6-6" />
             </svg>
-          </div>
+          </Link>
 
           {/* Loyalty */}
-          <a href="/loyalty" className="flex items-center justify-between px-4 py-4">
+          <Link href="/loyalty" className="flex items-center justify-between px-4 py-4">
             <div className="flex items-center gap-3">
               <span className="text-brand-subtext">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
@@ -124,7 +125,7 @@ export default function ProfileClient({ name, email }: ProfileClientProps) {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-subtext">
               <path d="M9 18l6-6-6-6" />
             </svg>
-          </a>
+          </Link>
         </div>
       </FadeUp>
 

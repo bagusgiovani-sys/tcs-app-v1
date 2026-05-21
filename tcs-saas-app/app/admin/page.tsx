@@ -5,14 +5,16 @@ import StatCard from '@/components/admin/StatCard'
 export default async function AdminDashboard() {
   const supabase = await createClient()
 
+  const today = new Date().toISOString().slice(0, 10)
+
   const [{ count: todayOrders }, { data: revenue }, { count: pendingCount }] = await Promise.all([
     supabase.from('orders').select('*', { count: 'exact', head: true })
       .eq('shop_id', SHOP_ID)
-      .gte('created_at', new Date().toISOString().slice(0, 10)),
+      .gte('created_at', today),
     supabase.from('orders').select('total')
       .eq('shop_id', SHOP_ID)
       .eq('status', 'completed')
-      .gte('created_at', new Date().toISOString().slice(0, 10)),
+      .gte('created_at', today),
     supabase.from('orders').select('*', { count: 'exact', head: true })
       .eq('shop_id', SHOP_ID)
       .eq('status', 'pending'),

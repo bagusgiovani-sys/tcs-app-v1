@@ -68,14 +68,14 @@ export default function CoffeeRadarChart({ profile }: { profile: CoffeeProfile }
       })}
 
       {/* Data fill */}
-      <polygon points={dataPoints} fill="rgba(244,185,66,0.22)" stroke="#F4B942" strokeWidth="2" strokeLinejoin="round" />
+      <polygon points={dataPoints} fill="var(--color-brand-accent)" fillOpacity="0.22" stroke="var(--color-brand-accent)" strokeWidth="2" strokeLinejoin="round" />
 
       {/* Data dots */}
       {PROFILE_DIMS.map((d, i) => {
         const val = Math.max(1, Math.min(5, profile[d.key as keyof CoffeeProfile] ?? 3))
         const p = pt((val / LEVELS) * MAX_R, i)
         return (
-          <circle key={i} cx={p.x} cy={p.y} r={3.5} fill="#F4B942" stroke="rgba(0,0,0,0.4)" strokeWidth="1" />
+          <circle key={i} cx={p.x} cy={p.y} r={3.5} fill="var(--color-brand-accent)" stroke="rgba(0,0,0,0.4)" strokeWidth="1" />
         )
       })}
 
