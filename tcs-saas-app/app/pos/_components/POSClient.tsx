@@ -64,7 +64,7 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
     }).select('id').single()
 
     if (order) {
-      await supabase.from('order_items').insert(
+      const { error: itemsErr } = await supabase.from('order_items').insert(
         items.map((i) => ({
           order_id: order.id,
           product_id: i.productId,
@@ -73,6 +73,11 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
           subtotal: i.price * i.quantity,
         }))
       )
+      if (itemsErr) {
+        await supabase.from('orders').delete().eq('id', order.id)
+        setLoading(false)
+        return
+      }
       setOrderId(order.id)
       setShowQRIS(true)
     }
@@ -83,7 +88,7 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
     if (!orderId) return
     setLoading(true)
     const supabase = createClient()
-    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId)
+    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId).eq('shop_id', SHOP_ID)
     setItems([])
     setOrderId(null)
     setShowQRIS(false)

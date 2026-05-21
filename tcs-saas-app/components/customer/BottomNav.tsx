@@ -149,7 +149,7 @@ export default function BottomNav() {
                   {isCart && cartCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
-                      animate={{ scale: 0, y: active ? -12 : 0 }}
+                      animate={{ scale: 1, y: active ? -12 : 0 }}
                       transition={SPRING}
                       style={{
                         position: 'absolute',

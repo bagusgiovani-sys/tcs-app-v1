@@ -45,10 +45,12 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              const theme = localStorage.getItem('tcs-theme');
-              const mode = localStorage.getItem('tcs-mode');
-              if (theme === 'dark') document.documentElement.classList.add('dark');
-              if (mode === 'vibe') document.documentElement.classList.add('vibe');
+              try {
+                const theme = localStorage.getItem('tcs-theme');
+                const mode = localStorage.getItem('tcs-mode');
+                if (theme === 'dark') document.documentElement.classList.add('dark');
+                if (mode === 'vibe') document.documentElement.classList.add('vibe');
+              } catch(e) {}
             `,
           }}
         />
