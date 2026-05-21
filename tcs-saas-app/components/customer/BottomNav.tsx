@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useCartStore } from '@/lib/stores/cart'
 
-const navItems = [
+const NAV_ITEMS = [
   {
     href: '/',
     label: 'Home',
@@ -48,6 +48,8 @@ const navItems = [
   },
 ]
 
+const SPRING = { type: 'spring' as const, damping: 26, stiffness: 280 }
+
 export default function BottomNav() {
   const pathname = usePathname()
   const cartCount = useCartStore((s) => s.count())
@@ -57,47 +59,81 @@ export default function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center pb-4 px-5">
-      <nav className="w-full max-w-[430px] h-16 bg-brand-card rounded-3xl flex items-center justify-around px-2"
-        style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }}>
-        {navItems.map((item) => {
+    <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center px-4 pb-5">
+      <nav
+        className="relative w-full max-w-[430px] h-[60px] bg-brand-card rounded-[30px] flex items-center"
+        style={{ overflow: 'visible', boxShadow: '0 8px 32px rgba(0,0,0,0.18)' }}
+      >
+        {NAV_ITEMS.map((item) => {
           const active = isActive(item.href)
           const isCart = item.href === '/cart'
 
           return (
-            <motion.div
-              key={item.href}
-              whileTap={{ scale: 0.88 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 400 }}
-              className="relative flex-1 flex justify-center"
-            >
-              <Link href={item.href} className="flex flex-col items-center gap-1">
-                <div className="relative flex items-center justify-center w-11 h-11 rounded-full">
-                  {active && (
-                    <motion.div
-                      layoutId="navPill"
-                      className="absolute inset-0 rounded-full bg-brand-accent"
-                      transition={{ type: 'spring', damping: 24, stiffness: 320 }}
-                    />
-                  )}
-                  <span className={`relative z-10 transition-colors duration-150 ${active ? 'text-brand-on-accent' : 'text-brand-subtext'}`}>
+            <div key={item.href} className="relative flex-1 h-full flex items-center justify-center">
+
+              {/* Dip: page-bg circle that covers top edge of pill → concave illusion */}
+              {active && (
+                <motion.div
+                  layoutId="navDip"
+                  className="absolute left-1/2 -translate-x-1/2 rounded-full bg-brand-bg"
+                  style={{ width: 66, height: 66, top: -18, zIndex: 1 }}
+                  transition={SPRING}
+                />
+              )}
+
+              {/* Raised bubble */}
+              {active && (
+                <motion.div
+                  layoutId="navBubble"
+                  className="absolute left-1/2 -translate-x-1/2 rounded-full bg-brand-surface border border-brand-border"
+                  style={{ width: 54, height: 54, top: -13, zIndex: 2 }}
+                  transition={SPRING}
+                />
+              )}
+
+              {/* Inactive subtle circle */}
+              {!active && (
+                <div
+                  className="absolute left-1/2 -translate-x-1/2 rounded-full bg-brand-surface"
+                  style={{ width: 44, height: 44, opacity: 0.55, zIndex: 0 }}
+                />
+              )}
+
+              {/* Icon + label */}
+              <motion.div
+                whileTap={{ scale: 0.85 }}
+                transition={SPRING}
+                style={{ position: 'relative', zIndex: 10 }}
+              >
+                <Link href={item.href} className="flex flex-col items-center gap-0.5">
+                  <motion.span
+                    animate={{ y: active ? -10 : 0 }}
+                    transition={SPRING}
+                    className={active ? 'text-brand-accent' : 'text-brand-subtext'}
+                  >
                     {item.icon}
-                  </span>
+                  </motion.span>
+                  <motion.span
+                    animate={{ y: active ? -10 : 0 }}
+                    transition={SPRING}
+                    className={`text-[9px] font-sans font-medium leading-none ${active ? 'text-brand-accent' : 'text-brand-subtext'}`}
+                  >
+                    {item.label}
+                  </motion.span>
                   {isCart && cartCount > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -top-0.5 -right-0.5 z-20 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center"
+                      animate={{ scale: 1, y: active ? -10 : 0 }}
+                      transition={SPRING}
+                      className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center z-20"
                     >
                       {cartCount > 9 ? '9+' : cartCount}
                     </motion.span>
                   )}
-                </div>
-                <span className={`text-[9px] font-sans font-medium transition-colors duration-150 ${active ? 'text-brand-accent' : 'text-brand-subtext'}`}>
-                  {item.label}
-                </span>
-              </Link>
-            </motion.div>
+                </Link>
+              </motion.div>
+
+            </div>
           )
         })}
       </nav>
