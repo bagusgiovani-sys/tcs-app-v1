@@ -62,7 +62,7 @@
 
 ## Phase 6 — Polish & Deploy
 
-- [ ] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.ts`), icons (`public/icons/icon-192.png` + `icon-512.png`).
+- [x] Step 27: PWA config (`next.config.ts`), manifest (`app/manifest.ts`), icons (`public/icons/icon-192.png` + `icon-512.png`).
 - [ ] Step 28: Dark mode polish pass — verify every component in all 4 theme states (TCS light, TCS dark, Vibe light, Vibe dark).
 - [ ] Step 29: Full QA on mobile viewport (375px) — test thumb reach, WhatsApp link open.
 - [ ] Step 30: Deploy to Vercel. Set all env vars in Vercel dashboard.
@@ -82,6 +82,6 @@
 
 ## Current Status
 
-**Last completed:** Step 26 — all pages built (auth, customer, admin, POS, loyalty)
-**Currently working on:** Step 27 — PWA config
-**Next action:** Step 27 — PWA config (next.config.ts, manifest.ts, icons)
+**Last completed:** Step 27 — PWA config, manifest, placeholder icons
+**Currently working on:** Step 28 — dark mode QA
+**Next action:** Step 28 — verify all components in all 4 theme states
