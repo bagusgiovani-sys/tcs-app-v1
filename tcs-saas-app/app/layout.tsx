@@ -46,8 +46,7 @@ export default function RootLayout({
             __html: `
               const theme = localStorage.getItem('tcs-theme');
               const mode = localStorage.getItem('tcs-mode');
-              const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-              if (theme === 'dark' || (!theme && prefersDark)) document.documentElement.classList.add('dark');
+              if (theme === 'dark') document.documentElement.classList.add('dark');
               if (mode === 'vibe') document.documentElement.classList.add('vibe');
             `,
           }}
