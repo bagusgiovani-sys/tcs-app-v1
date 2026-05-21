@@ -11,22 +11,25 @@ interface Order {
   itemCount: number
   total: number
   status: OrderStatus
+  paymentMethod: string
+  paymentStatus: string
   createdAt: string
 }
 
 interface OrderQueueProps {
   orders: Order[]
   onStatusChange: (id: string, status: OrderStatus) => void
+  onConfirmPayment: (id: string) => void
 }
 
 const columns: { status: OrderStatus; label: string }[] = [
-  { status: 'pending', label: 'Masuk' },
+  { status: 'pending',   label: 'Masuk' },
   { status: 'confirmed', label: 'Dikonfirmasi' },
   { status: 'preparing', label: 'Diproses' },
-  { status: 'ready', label: 'Siap' },
+  { status: 'ready',     label: 'Siap Diambil' },
 ]
 
-export default function OrderQueue({ orders, onStatusChange }: OrderQueueProps) {
+export default function OrderQueue({ orders, onStatusChange, onConfirmPayment }: OrderQueueProps) {
   return (
     <div className="grid grid-cols-4 gap-4">
       {columns.map((col) => {
@@ -40,7 +43,12 @@ export default function OrderQueue({ orders, onStatusChange }: OrderQueueProps) 
               </span>
             </div>
             {colOrders.map((order) => (
-              <OrderCard key={order.id} {...order} onStatusChange={onStatusChange} />
+              <OrderCard
+                key={order.id}
+                {...order}
+                onStatusChange={onStatusChange}
+                onConfirmPayment={onConfirmPayment}
+              />
             ))}
             {colOrders.length === 0 && (
               <p className="text-brand-muted text-xs font-sans text-center py-6">Kosong</p>

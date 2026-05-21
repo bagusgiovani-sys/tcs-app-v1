@@ -8,7 +8,7 @@ export default async function AdminOrdersPage() {
   const { data: orders } = await supabase
     .from('orders')
     .select(`
-      id, status, type, table_number, total, created_at, payment_status,
+      id, status, type, table_number, total, created_at, payment_method, payment_status,
       users (name),
       order_items (id)
     `)
@@ -25,6 +25,8 @@ export default async function AdminOrdersPage() {
     itemCount: o.order_items?.length ?? 0,
     total: o.total,
     status: o.status,
+    paymentMethod: o.payment_method,
+    paymentStatus: o.payment_status,
     createdAt: o.created_at,
   }))
 
