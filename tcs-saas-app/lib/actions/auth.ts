@@ -11,7 +11,15 @@ export async function login(formData: FormData) {
 
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.message.toLowerCase().includes('email not confirmed')) {
+      return { error: 'Email belum dikonfirmasi. Cek inbox kamu atau hubungi admin.' }
+    }
+    if (error.message.toLowerCase().includes('invalid login credentials')) {
+      return { error: 'Email atau password salah.' }
+    }
+    return { error: error.message }
+  }
 
   redirect(redirectTo || '/')
 }
@@ -22,15 +30,26 @@ export async function register(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: { data: { name } },
   })
 
-  if (error) return { error: error.message }
+  if (error) {
+    if (error.message.toLowerCase().includes('already registered')) {
+      return { error: 'Email ini sudah terdaftar. Coba masuk.' }
+    }
+    return { error: error.message }
+  }
 
-  redirect('/')
+  // If session exists immediately → email confirmation is OFF → auto logged in
+  if (data.session) {
+    return { success: true, confirmed: true }
+  }
+
+  // Email confirmation is ON → user needs to check email
+  return { success: true, confirmed: false }
 }
 
 export async function logout() {

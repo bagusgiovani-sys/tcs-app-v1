@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
 
 const navItems = [
   {
@@ -54,20 +55,21 @@ export default function BottomNav() {
       {navItems.map((item) => {
         const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex flex-col items-center gap-0.5 flex-1"
-          >
-            <div className={`relative flex items-center justify-center w-12 h-8 rounded-full transition-colors ${active ? 'bg-brand-accent' : ''}`}>
-              <span className={active ? 'text-brand-on-accent' : 'text-brand-subtext'}>
-                {item.icon(active)}
+          <motion.div key={item.href} whileTap={{ scale: 0.88 }} className="flex-1">
+            <Link
+              href={item.href}
+              className="flex flex-col items-center gap-0.5"
+            >
+              <div className={`relative flex items-center justify-center w-12 h-8 rounded-full transition-colors ${active ? 'bg-brand-accent' : ''}`}>
+                <span className={active ? 'text-brand-on-accent' : 'text-brand-subtext'}>
+                  {item.icon(active)}
+                </span>
+              </div>
+              <span className={`text-[10px] font-sans font-semibold ${active ? 'text-brand-accent' : 'text-brand-subtext'}`}>
+                {item.label}
               </span>
-            </div>
-            <span className={`text-[10px] font-sans font-semibold ${active ? 'text-brand-accent' : 'text-brand-subtext'}`}>
-              {item.label}
-            </span>
-          </Link>
+            </Link>
+          </motion.div>
         )
       })}
     </nav>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import CategoryTabs from '@/components/customer/CategoryTabs'
 import ProductCard from '@/components/customer/ProductCard'
 
@@ -28,23 +29,40 @@ export default function CategoryProductList({ products, categories }: CategoryPr
   return (
     <>
       <CategoryTabs categories={categories} active={active} onChange={setActive} />
-      <div className="grid grid-cols-2 gap-3 mt-2">
-        {filtered.map((product) => (
-          <ProductCard
-            key={product.id}
-            id={product.id}
-            name={product.name}
-            description={product.description ?? ''}
-            price={product.price}
-            imageUrl={product.image_url ?? undefined}
-          />
-        ))}
+      <motion.div className="grid grid-cols-2 gap-3 mt-2" layout>
+        <AnimatePresence mode="popLayout">
+          {filtered.map((product, i) => (
+            <motion.div
+              key={product.id}
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: i * 0.055, duration: 0.28 }}
+              layout
+            >
+              <ProductCard
+                id={product.id}
+                name={product.name}
+                description={product.description ?? ''}
+                price={product.price}
+                imageUrl={product.image_url ?? undefined}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
         {filtered.length === 0 && (
-          <p className="col-span-2 text-center text-brand-subtext text-sm font-sans py-10">
+          <motion.p
+            key="empty"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="col-span-2 text-center text-brand-subtext text-sm font-sans py-10"
+          >
             Tidak ada produk di kategori ini
-          </p>
+          </motion.p>
         )}
-      </div>
+      </motion.div>
     </>
   )
 }

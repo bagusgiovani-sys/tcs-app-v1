@@ -1,10 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
-import ProductCard from '@/components/customer/ProductCard'
-import CategoryTabs from '@/components/customer/CategoryTabs'
 import HomeHeader from './_components/HomeHeader'
 import PromoBanner from './_components/PromoBanner'
 import CategoryProductList from './_components/CategoryProductList'
+import PageSlide from './_components/PageSlide'
 
 const CATEGORIES = [
   { value: 'all', label: 'Semua' },
@@ -31,12 +30,12 @@ export default async function HomePage() {
     : { data: null }
 
   return (
-    <div className="flex flex-col">
+    <PageSlide>
       <HomeHeader userName={profile?.name ?? null} />
       <PromoBanner />
       <div className="px-5 mt-6 flex flex-col gap-4">
         <CategoryProductList products={products ?? []} categories={CATEGORIES} />
       </div>
-    </div>
+    </PageSlide>
   )
 }
