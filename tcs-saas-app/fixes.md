@@ -91,3 +91,26 @@
 **Before:** Radar chart always used mustard yellow regardless of dark/vibe mode.
 **After:** Uses brand-accent token — adapts to all four theme states.
 **Linked step:** [[ultra-progress.md#Milestone 3]]
+
+---
+
+## [2026-05-22] Admin dashboard revenue via DB aggregate RPC
+#PERF #supabase
+**File(s) changed:**
+- `app/admin/page.tsx:13` — replaced `.select('total')` + JS reduce with `supabase.rpc('sum_completed_revenue', ...)`
+
+**Before:** Fetched every completed order's `total` column and summed in JavaScript.
+**After:** Single scalar returned from DB. Zero row transfer cost.
+**Linked step:** [[ultra-progress.md#Milestone 2]]
+
+---
+
+## [2026-05-22] users table trigger + backfill (Supabase SQL)
+#ARCH #supabase
+**File(s) changed:**
+- Supabase DB: `handle_new_user()` function + `on_auth_user_created` trigger on `auth.users`
+- Supabase DB: backfill INSERT for existing auth users missing a `public.users` row
+
+**Before:** `register()` action created auth user only. All `users.name` queries returned null.
+**After:** Every new signup auto-creates a `users` row with name from metadata and role='customer'.
+**Linked step:** [[ultra-progress.md#Milestone 3]]

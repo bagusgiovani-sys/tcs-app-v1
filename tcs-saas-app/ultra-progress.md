@@ -22,24 +22,24 @@
 - [x] **[CHORE]** Delete `nextjs-splash/` root directory — template copy, not imported anywhere
 - [x] **[ARCH]** Sidebar dead routes — `components/admin/Sidebar.tsx:10–11` — remove `/admin/vouchers` and `/admin/loyalty` until pages exist
 - [x] **[QUAL]** Profile "Riwayat Pesanan" dead row — `app/(customer)/profile/_components/ProfileClient.tsx:100` — add Link to `/order/history`
-- [ ] **[PERF]** Admin dashboard revenue uses JS reduce — `app/admin/page.tsx:13` — needs `sum_completed_revenue` RPC in Supabase (requires DB migration — deferred)
+- [x] **[PERF]** Admin dashboard revenue uses JS reduce — `app/admin/page.tsx:13` — `sum_completed_revenue` RPC deployed + wired
 - [x] **[QUAL]** `<a>` → `<Link>` in ProfileClient — `ProfileClient.tsx:115` — causes full page reload
 
 ## Milestone 3 — Quality & Polish
 
 - [x] **[QUAL]** CoffeeRadarChart hardcoded hex — `components/customer/CoffeeRadarChart.tsx:71,72,78` — replace `#F4B942` with `var(--color-brand-accent)`
-- [ ] **[ARCH]** Missing `users` table trigger — document the required SQL trigger; user must run it in Supabase dashboard
+- [x] **[ARCH]** Missing `users` table trigger — SQL deployed: `handle_new_user()` trigger + backfill run
 
 ---
 
 ## Session Log
 | Session | Date       | Steps completed                         | Token % at close | Notes |
 |---------|------------|-----------------------------------------|-----------------|-------|
-| 1       | 2026-05-22 | Full audit + M1 all + M2 5/6 + M3 1/2  | ~80%            | 10/12 items done |
+| 1       | 2026-05-22 | Full audit + all 12 items complete      | ~90%            | All milestones done |
 
 ---
 
 ## Current Status
-**Last completed:** M3-1 CoffeeRadarChart CSS vars
+**Last completed:** M2-5 admin revenue RPC + M3-2 users trigger SQL
 **Currently working on:** —
-**Next action:** M2-5 DB aggregate (needs Supabase RPC migration — user action) · M3-2 users trigger SQL
+**Next action:** All Ultra-Instinct items resolved. Resume normal build from first-steps.md.
