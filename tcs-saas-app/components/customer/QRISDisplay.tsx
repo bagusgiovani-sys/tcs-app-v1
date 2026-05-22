@@ -20,11 +20,11 @@ export default function QRISDisplay({ total, onConfirmPayment, isPending }: QRIS
       <p className="font-display font-semibold text-2xl text-brand-text">
         Rp {total.toLocaleString('id-ID')}
       </p>
-      <div className="w-56 h-56 relative rounded-2xl overflow-hidden border-2 border-brand-border bg-brand-surface flex items-center justify-center">
+      <div className="w-72 relative rounded-2xl overflow-hidden border-2 border-brand-border bg-white" style={{ aspectRatio: '3/4' }}>
         {qrisUrl ? (
-          <Image src={qrisUrl} alt="QRIS TCS Coffee" fill className="object-contain p-2" />
+          <Image src={qrisUrl} alt="QRIS TCS Coffee" fill className="object-contain" />
         ) : (
-          <p className="text-brand-subtext text-xs text-center px-4">QRIS belum dikonfigurasi</p>
+          <p className="text-brand-subtext text-xs text-center px-4 absolute inset-0 flex items-center justify-center">QRIS belum dikonfigurasi</p>
         )}
       </div>
       <p className="font-sans text-brand-subtext text-xs text-center">

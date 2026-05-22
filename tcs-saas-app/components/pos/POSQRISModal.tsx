@@ -21,11 +21,11 @@ export default function POSQRISModal({ open, total, orderId, onConfirm, onCancel
       <div className="flex flex-col items-center gap-4">
         <p className="font-sans text-brand-subtext text-sm text-center">Order #{orderId.slice(-6).toUpperCase()}</p>
         <p className="font-display font-semibold text-2xl text-brand-text">Rp {total.toLocaleString('id-ID')}</p>
-        <div className="w-52 h-52 relative rounded-2xl overflow-hidden border-2 border-brand-border bg-brand-surface flex items-center justify-center">
+        <div className="w-64 relative rounded-2xl overflow-hidden border-2 border-brand-border bg-white" style={{ aspectRatio: '3/4' }}>
           {qrisUrl ? (
-            <Image src={qrisUrl} alt="QRIS" fill className="object-contain p-2" />
+            <Image src={qrisUrl} alt="QRIS" fill className="object-contain" />
           ) : (
-            <p className="text-brand-subtext text-xs text-center px-4">QRIS belum dikonfigurasi</p>
+            <p className="text-brand-subtext text-xs text-center px-4 absolute inset-0 flex items-center justify-center">QRIS belum dikonfigurasi</p>
           )}
         </div>
         <div className="flex gap-3 w-full">
