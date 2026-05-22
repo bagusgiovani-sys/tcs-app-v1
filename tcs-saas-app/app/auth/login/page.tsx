@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
@@ -23,7 +23,7 @@ function FadeUp({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
   )
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/'
   const [toast, setToast] = useState<{ message: string; type: 'error' } | null>(null)
@@ -93,5 +93,13 @@ export default function LoginPage() {
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
       )}
     </AuthBackground>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginContent />
+    </Suspense>
   )
 }
