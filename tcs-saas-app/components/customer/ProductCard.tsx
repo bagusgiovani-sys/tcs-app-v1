@@ -46,7 +46,7 @@ export default function ProductCard({
         ) : (
           <div className="w-full aspect-square mb-2 bg-brand-surface rounded-md" />
         )}
-        <p className="font-display font-semibold text-lg text-white leading-tight">{name}</p>
+        <p className="font-display font-semibold text-lg text-brand-on-accent leading-tight">{name}</p>
         <p className="font-sans text-[9px] text-brand-on-accent leading-[11px] mt-1 line-clamp-2">{description}</p>
         <p className="font-display font-semibold text-base text-brand-on-accent mt-1">
           Rp {price.toLocaleString('id-ID')}

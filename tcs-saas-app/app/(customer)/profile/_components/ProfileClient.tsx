@@ -126,6 +126,28 @@ export default function ProfileClient({ name, email }: ProfileClientProps) {
               <path d="M9 18l6-6-6-6" />
             </svg>
           </Link>
+
+          {/* Share via WhatsApp */}
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent('Yuk order kopi di TCS Coffee! ' + (process.env.NEXT_PUBLIC_APP_URL ?? ''))}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between px-4 py-4"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-brand-subtext">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+              </span>
+              <span className="font-sans text-sm font-semibold text-brand-text">Bagikan via WhatsApp</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-brand-subtext">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15,3 21,3 21,9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
         </div>
       </FadeUp>
 

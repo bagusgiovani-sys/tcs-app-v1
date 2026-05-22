@@ -59,7 +59,7 @@ export default function BottomNav() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center px-5 pb-6">
+    <div className="fixed bottom-0 left-0 right-0 z-30 flex justify-center px-5" style={{ paddingBottom: 'max(24px, env(safe-area-inset-bottom))' }}>
       {/* Pill — always dark warm brown regardless of mode */}
       <nav
         className="relative w-full max-w-[430px] h-[64px] rounded-[32px] flex items-center bg-brand-card"

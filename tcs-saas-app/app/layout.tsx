@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import ClientShell from "./client-shell";
@@ -27,6 +27,13 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "TCS Coffee",
   description: "Order your favourite coffee directly — no middleman.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
