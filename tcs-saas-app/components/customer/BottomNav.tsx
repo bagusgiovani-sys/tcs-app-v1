@@ -97,7 +97,7 @@ export default function BottomNav() {
                     zIndex: 2,
                     position: 'absolute',
                     borderRadius: '50%',
-                    background: 'var(--color-brand-surface)',
+                    background: 'var(--color-brand-accent)',
                     boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
                   }}
                   transition={SPRING}
