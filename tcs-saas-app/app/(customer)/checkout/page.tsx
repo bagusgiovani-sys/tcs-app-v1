@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/stores/cart'
 import { createClient } from '@/lib/supabase/client'
 import { SHOP_ID } from '@/lib/utils/constants'
-import QRISDisplay from '@/components/customer/QRISDisplay'
+import dynamic from 'next/dynamic'
+const QRISDisplay = dynamic(() => import('@/components/customer/QRISDisplay'), { ssr: false })
 import Button from '@/components/ui/Button'
 
 type OrderType = 'pickup' | 'dine_in'

@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client'
 import { SHOP_ID } from '@/lib/utils/constants'
 import MenuGrid from '@/components/pos/MenuGrid'
 import OrderBuilder from '@/components/pos/OrderBuilder'
-import POSQRISModal from '@/components/pos/POSQRISModal'
+import dynamic from 'next/dynamic'
+const POSQRISModal = dynamic(() => import('@/components/pos/POSQRISModal'), { ssr: false })
 
 interface DBProduct {
   id: string

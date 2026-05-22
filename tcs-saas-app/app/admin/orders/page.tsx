@@ -1,6 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
-import AdminOrderQueue from './_components/AdminOrderQueue'
+import dynamic from 'next/dynamic'
+const AdminOrderQueue = dynamic(() => import('./_components/AdminOrderQueue'), {
+  loading: () => (
+    <div className="flex flex-col gap-3">
+      {[1, 2, 3].map((n) => (
+        <div key={n} className="h-24 rounded-2xl bg-brand-muted animate-pulse" />
+      ))}
+    </div>
+  ),
+})
 
 export default async function AdminOrdersPage() {
   const supabase = await createClient()
