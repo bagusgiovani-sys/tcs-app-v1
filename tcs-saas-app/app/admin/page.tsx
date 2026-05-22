@@ -7,20 +7,17 @@ export default async function AdminDashboard() {
 
   const today = new Date().toISOString().slice(0, 10)
 
-  const [{ count: todayOrders }, { data: revenue }, { count: pendingCount }] = await Promise.all([
+  const [{ count: todayOrders }, { data: revenueData }, { count: pendingCount }] = await Promise.all([
     supabase.from('orders').select('*', { count: 'exact', head: true })
       .eq('shop_id', SHOP_ID)
       .gte('created_at', today),
-    supabase.from('orders').select('total')
-      .eq('shop_id', SHOP_ID)
-      .eq('status', 'completed')
-      .gte('created_at', today),
+    supabase.rpc('sum_completed_revenue', { p_shop_id: SHOP_ID, p_date: today }),
     supabase.from('orders').select('*', { count: 'exact', head: true })
       .eq('shop_id', SHOP_ID)
       .eq('status', 'pending'),
   ])
 
-  const totalRevenue = (revenue ?? []).reduce((sum, o) => sum + Number(o.total), 0)
+  const totalRevenue = Number(revenueData ?? 0)
 
   return (
     <div className="flex flex-col gap-6">
