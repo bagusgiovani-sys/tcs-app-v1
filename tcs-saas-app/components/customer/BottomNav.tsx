@@ -97,8 +97,8 @@ export default function BottomNav() {
                     zIndex: 2,
                     position: 'absolute',
                     borderRadius: '50%',
-                    background: 'var(--color-brand-accent)',
-                    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+                    background: 'var(--color-brand-bg)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.22)',
                   }}
                   transition={SPRING}
                 />
@@ -141,7 +141,7 @@ export default function BottomNav() {
                       fontSize: 9,
                       fontWeight: 600,
                       fontFamily: 'var(--font-sans)',
-                      color: active ? 'var(--color-brand-accent)' : 'var(--color-brand-subtext)',
+                      color: active ? 'var(--color-muted)' : 'var(--color-brand-subtext)',
                     }}
                   >
                     {item.label}
