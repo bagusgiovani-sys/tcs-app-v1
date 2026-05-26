@@ -126,7 +126,7 @@ export default function BottomNav() {
                 transition={SPRING}
                 style={{ position: 'relative', zIndex: 10 }}
               >
-                <Link href={item.href} className="flex flex-col items-center gap-[3px]">
+                <Link href={item.href} className="flex flex-col items-center gap-1">
                   <motion.span
                     animate={{ y: active ? -18 : 0 }}
                     transition={SPRING}
