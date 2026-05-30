@@ -20,8 +20,13 @@ AS $$
 $$;
 
 -- ============================================================
--- PRODUCTS — admin/staff full access for their shop
+-- PRODUCTS — public browse + admin/staff full access
 -- ============================================================
+
+-- Allow anyone (anon + authenticated) to view available products
+CREATE POLICY "Public can view available products"
+  ON products FOR SELECT
+  USING (is_available = true);
 
 -- Allow admin/staff to view ALL products (including unavailable)
 CREATE POLICY "Staff can view all shop products"
