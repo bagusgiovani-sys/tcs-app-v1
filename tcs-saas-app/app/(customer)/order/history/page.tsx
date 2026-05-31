@@ -4,6 +4,17 @@ import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
 import OrderStatusBadge from '@/components/customer/OrderStatusBadge'
 
+type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
+
+interface OrderRow {
+  id: string
+  status: OrderStatus
+  total: number
+  type: string
+  created_at: string
+  payment_status: string
+}
+
 export default async function OrderHistoryPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -33,7 +44,7 @@ export default async function OrderHistoryPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {(orders ?? []).map((order: any) => (
+          {(orders ?? [] as OrderRow[]).map((order) => (
             <Link key={order.id} href={`/order/${order.id}`} className="block">
               <div className="bg-brand-card border border-brand-border rounded-2xl px-4 py-4 flex items-center justify-between gap-3">
                 <div className="flex flex-col gap-1 min-w-0">

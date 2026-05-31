@@ -87,10 +87,15 @@ export default function CheckoutPage() {
     if (!orderId) return
     setLoading(true)
     const supabase = createClient()
-    await supabase
+    const { error: updateErr } = await supabase
       .from('orders')
       .update({ payment_status: 'paid', status: 'confirmed' })
       .eq('id', orderId)
+    if (updateErr) {
+      setError('Gagal konfirmasi pembayaran, coba lagi')
+      setLoading(false)
+      return
+    }
     clear()
     router.push(`/order/${orderId}`)
   }

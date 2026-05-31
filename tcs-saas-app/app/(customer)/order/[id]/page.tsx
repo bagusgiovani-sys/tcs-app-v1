@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { SHOP_ID } from '@/lib/utils/constants'
 import OrderStatusBadge from '@/components/customer/OrderStatusBadge'
 import Skeleton from '@/components/ui/Skeleton'
 
@@ -40,7 +41,7 @@ export default function OrderStatusPage({ params }: { params: Promise<{ id: stri
     if (!orderId) return
     const supabase = createClient()
 
-    supabase.from('orders').select('*').eq('id', orderId).single()
+    supabase.from('orders').select('*').eq('id', orderId).eq('shop_id', SHOP_ID).single()
       .then(({ data }) => { setOrder(data); setLoading(false) })
 
     const channel = supabase

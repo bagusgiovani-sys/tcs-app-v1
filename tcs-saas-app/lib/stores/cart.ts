@@ -12,7 +12,7 @@ interface CartItem {
 
 interface CartStore {
   items: CartItem[]
-  addItem: (item: Omit<CartItem, 'quantity'>) => void
+  addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void
   increment: (productId: string, size?: string) => void
   decrement: (productId: string, size?: string) => void
   remove: (productId: string, size?: string) => void
@@ -30,16 +30,17 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (item) => {
         const k = key(item.productId, item.size)
+        const qty = item.quantity ?? 1
         set((state) => {
           const existing = state.items.find((i) => key(i.productId, i.size) === k)
           if (existing) {
             return {
               items: state.items.map((i) =>
-                key(i.productId, i.size) === k ? { ...i, quantity: i.quantity + 1 } : i
+                key(i.productId, i.size) === k ? { ...i, quantity: i.quantity + qty } : i
               ),
             }
           }
-          return { items: [...state.items, { ...item, quantity: 1 }] }
+          return { items: [...state.items, { ...item, quantity: qty }] }
         })
       },
 

@@ -114,3 +114,71 @@
 **Before:** `register()` action created auth user only. All `users.name` queries returned null.
 **After:** Every new signup auto-creates a `users` row with name from metadata and role='customer'.
 **Linked step:** [[ultra-progress.md#Milestone 3]]
+
+---
+
+## [2026-05-31 Session 2] BottomNav active label uses undefined CSS token
+#QUAL #css-tokens
+**File(s) changed:**
+- `components/customer/BottomNav.tsx:144` — `var(--color-muted)` → `var(--color-brand-muted)`
+
+**Before:** Active nav label text color referenced `--color-muted` which is not defined in `@theme {}`. Rendered as empty/fallback, making label invisible in active state.
+**After:** Uses correct `--color-brand-muted` token — warm tan that softens the label as it floats upward.
+**Linked step:** [[ultra-progress.md#Milestone 4]]
+
+---
+
+## [2026-05-31 Session 2] ProductDetail qty selector was decorative
+#UX #cart
+**File(s) changed:**
+- `lib/stores/cart.ts` — `addItem` signature accepts optional `quantity`; existing-item path adds `qty` instead of always +1
+- `app/(customer)/product/[id]/_components/ProductDetail.tsx` — `handleAddToCart` passes `quantity: qty`
+
+**Before:** `qty` state (stepper on product detail) only drove the price preview. `handleAddToCart` always called `addItem({...})` with no qty, so cart always started at 1 regardless of stepper value.
+**After:** Selecting qty=3 on product detail adds 3 units to cart.
+**Linked step:** [[ultra-progress.md#Milestone 4]]
+
+---
+
+## [2026-05-31 Session 2] Missing shop_id filter on order status query
+#SEC #supabase
+**File(s) changed:**
+- `app/(customer)/order/[id]/page.tsx` — added `import { SHOP_ID }`, added `.eq('shop_id', SHOP_ID)` to the fetch query
+
+**Before:** Order fetched by ID only — any authenticated user who guessed an order UUID could retrieve it.
+**After:** Query scoped to both `id` and `shop_id`. Defense in depth alongside RLS.
+**Linked step:** [[ultra-progress.md#Milestone 5]]
+
+---
+
+## [2026-05-31 Session 2] handleConfirmPayment had no error handling
+#QUAL #supabase
+**File(s) changed:**
+- `app/(customer)/checkout/page.tsx:86` — destructure `error` from update response; set error state and early-return on failure
+
+**Before:** Supabase update was awaited but error ignored. On failure, user was silently redirected with a broken order state.
+**After:** Shows Indonesian error message and stays on QRIS screen so user can retry.
+**Linked step:** [[ultra-progress.md#Milestone 5]]
+
+---
+
+## [2026-05-31 Session 2] Replace `any` types in order/loyalty pages
+#QUAL #typescript
+**File(s) changed:**
+- `app/(customer)/loyalty/page.tsx` — added `LoyaltyTx` interface; replaced `(tx: any)` with typed map
+- `app/(customer)/order/history/page.tsx` — added `OrderStatus` union + `OrderRow` interface; replaced `(order: any)` with typed map
+
+**Before:** Supabase query results cast as `any`, losing type safety on all field accesses.
+**After:** Proper inline interfaces. TypeScript will catch field name typos.
+**Linked step:** [[ultra-progress.md#Milestone 5]]
+
+---
+
+## [2026-05-31 Session 2] Manifest background_color out of sync
+#CHORE #pwa
+**File(s) changed:**
+- `app/manifest.ts:11` — `#FAF7F2` → `#FBE3C2`
+
+**Before:** Manifest used old Figma token value. Install splash briefly shows wrong background before theme loads.
+**After:** Matches current `--color-brand-bg` in globals.css.
+**Linked step:** [[ultra-progress.md#Milestone 6]]

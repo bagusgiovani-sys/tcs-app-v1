@@ -141,7 +141,7 @@ export default function BottomNav() {
                       fontSize: 9,
                       fontWeight: 600,
                       fontFamily: 'var(--font-sans)',
-                      color: active ? 'var(--color-muted)' : 'var(--color-brand-subtext)',
+                      color: active ? 'var(--color-brand-muted)' : 'var(--color-brand-subtext)',
                     }}
                   >
                     {item.label}

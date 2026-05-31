@@ -42,6 +42,7 @@ export default function ProductDetail({ product }: { product: Product }) {
       price: product.price,
       size: showSizes ? size : undefined,
       imageUrl: product.image_url ?? undefined,
+      quantity: qty,
     })
     setToast(true)
   }

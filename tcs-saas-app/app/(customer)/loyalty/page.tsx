@@ -4,6 +4,13 @@ import { SHOP_ID } from '@/lib/utils/constants'
 import LoyaltyCard from '@/components/customer/LoyaltyCard'
 import Badge from '@/components/ui/Badge'
 
+interface LoyaltyTx {
+  id: string
+  points: number
+  type: 'earn' | 'redeem' | 'expire' | 'manual'
+  created_at: string
+}
+
 export default async function LoyaltyPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -24,7 +31,7 @@ export default async function LoyaltyPage() {
       </p>
       <h2 className="font-sans font-semibold text-brand-text">Riwayat</h2>
       <div className="flex flex-col gap-2">
-        {(transactions ?? []).map((tx: any) => (
+        {(transactions ?? [] as LoyaltyTx[]).map((tx) => (
           <div key={tx.id} className="flex items-center justify-between bg-brand-card border border-brand-border rounded-xl px-4 py-3">
             <div>
               <p className="font-sans text-sm text-brand-text font-semibold">

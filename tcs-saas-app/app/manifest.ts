@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Pesan kopi favoritmu langsung — tanpa komisi.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#FAF7F2',
+    background_color: '#FBE3C2',
     theme_color: '#CE9760',
     orientation: 'portrait',
     icons: [

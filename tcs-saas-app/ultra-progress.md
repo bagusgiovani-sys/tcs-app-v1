@@ -36,10 +36,37 @@
 | Session | Date       | Steps completed                         | Token % at close | Notes |
 |---------|------------|-----------------------------------------|-----------------|-------|
 | 1       | 2026-05-22 | Full audit + all 12 items complete      | ~90%            | All milestones done |
+| 2       | 2026-05-31 | Fresh audit + M4/M5/M6 all complete    | ~60%            | 7 fixes: token bug, qty UX, shop_id sec, error handling, any types, manifest |
+
+---
+
+## Session 2 Audit — New Findings (2026-05-31)
+
+## Milestone 4 — Critical Fixes (fresh session)
+
+- [x] **[QUAL]** BottomNav active label uses `var(--color-muted)` (undefined token) — `components/customer/BottomNav.tsx:144` — fixed to `var(--color-brand-muted)`
+- [x] **[UX]** ProductDetail qty selector is decorative only — `app/(customer)/product/[id]/_components/ProductDetail.tsx:38-46` — updated cart store to accept optional `quantity`, wired qty into `handleAddToCart`
+
+## Milestone 5 — Major Improvements
+
+- [x] **[SEC]** `order/[id]/page.tsx:43` missing `shop_id` filter — added `.eq('shop_id', SHOP_ID)` + imported SHOP_ID
+- [x] **[QUAL]** `checkout/page.tsx:86` `handleConfirmPayment` has no error handling — added error state + user message
+- [x] **[QUAL]** `any` types in Supabase data — `app/(customer)/loyalty/page.tsx`, `app/(customer)/order/history/page.tsx` — replaced with typed inline interfaces
+
+## Milestone 6 — Minor Polish
+
+- [x] **[CHORE]** `app/manifest.ts:11` `background_color` synced to `#FBE3C2` (matches globals.css)
+
+---
+
+## Action Required (user, not auto-fixable)
+
+- **[DB] Apply RLS SQL to Supabase** — file ready at `supabase-fix-products-public.sql`, paste into Supabase SQL Editor. Products won't show on home page until this runs.
+- **[DEPLOY] Vercel** — connect repo and deploy when ready.
 
 ---
 
 ## Current Status
-**Last completed:** M2-5 admin revenue RPC + M3-2 users trigger SQL
+**Last completed:** Session 1 — all 12 items
 **Currently working on:** —
-**Next action:** All Ultra-Instinct items resolved. Resume normal build from first-steps.md.
+**Next action:** Apply Supabase RLS SQL, then Vercel deploy
