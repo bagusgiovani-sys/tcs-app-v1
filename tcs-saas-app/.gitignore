@@ -21,6 +21,7 @@
 /public/sw.js
 /public/swe-worker-*.js
 /public/workbox-*.js
+/app/sw.js
 
 # production
 /build
