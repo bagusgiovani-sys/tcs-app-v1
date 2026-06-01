@@ -1,5 +1,11 @@
 import type { NextConfig } from 'next'
-import withPWA from '@ducanh2912/next-pwa'
+import withSerwistInit from '@serwist/next'
+
+const withSerwist = withSerwistInit({
+  swSrc: 'app/sw.ts',
+  swDest: 'public/sw.js',
+  disable: process.env.NODE_ENV === 'development',
+})
 
 const CSP = [
   "default-src 'self'",
@@ -40,10 +46,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withPWA({
-  dest: 'public',
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  reloadOnOnline: true,
-  disable: process.env.NODE_ENV === 'development',
-})(nextConfig)
+export default withSerwist(nextConfig)
