@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(npx supabase *)",
+      "Bash(curl *)",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"https://vxbmrbaviphjzekddfil.supabase.co/rest/v1/\" -Headers @{ \"apikey\" = \"sb_publishable_Cf5KPR7WEmOGRIEdQEuNSg_tTFBSS3N\" } -Method Get -UseBasicParsing; $r.StatusCode } catch { $_.Exception.Response.StatusCode.value__ })",
+      "PowerShell(Start-Sleep -Seconds 15; try { $r = Invoke-WebRequest -Uri \"https://vxbmrbaviphjzekddfil.supabase.co/rest/v1/\" -Headers @{ \"apikey\" = \"sb_publishable_Cf5KPR7WEmOGRIEdQEuNSg_tTFBSS3N\" } -Method Get -UseBasicParsing -TimeoutSec 10; \"HTTP $\\($r.StatusCode\\)\" } catch { \"Error: $\\($_.Exception.Message\\)\" })",
+      "Bash(npx vercel *)",
+      "Bash(Stop-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "Bash(Write-Host \"stopped\")",
+      "Bash(npm run *)",
+      "Bash(Start-Sleep -Seconds 8)",
+      "Bash(Get-Content \"C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Exodus-Projects-TCS-App-tcs-saas-app\\\\a6de02ac-104f-4230-a37c-9ef1a9716ac0\\\\tasks\\\\bgmh3i49a.output\")",
+      "Bash(Select-Object -First 30)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(npm view *)",
+      "PowerShell(npm uninstall *)",
+      "PowerShell(npm install *)",
+      "PowerShell(npm list *)",
+      "Bash(npm list *)",
+      "Bash(npm ls *)",
+      "Bash(git commit *)",
+      "Bash(npx tsc *)",
+      "Bash(node *)"
+    ]
+  }
+}

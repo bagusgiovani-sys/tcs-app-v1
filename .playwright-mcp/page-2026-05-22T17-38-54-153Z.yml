@@ -1,0 +1,59 @@
+- generic [active] [ref=e1]:
+  - generic:
+    - generic:
+      - main:
+        - generic:
+          - generic:
+            - generic:
+              - paragraph: Selamat datang 👋
+              - heading "Tamu" [level=1]
+            - link "?":
+              - /url: /auth/login
+              - generic: "?"
+          - generic:
+            - paragraph:
+              - text: Diskon 20% untuk
+              - text: Pesanan Pertamamu!
+            - paragraph: "Gunakan kode: PERTAMA20"
+          - generic:
+            - generic:
+              - button "Semua"
+              - button "Kopi"
+              - button "Non-Kopi"
+              - button "Makanan"
+              - button "Merch"
+            - generic:
+              - paragraph: Tidak ada produk di kategori ini
+      - generic:
+        - generic:
+          - navigation:
+            - generic:
+              - generic:
+                - link "Home":
+                  - /url: /
+                  - generic:
+                    - img
+                  - generic: Home
+            - generic:
+              - generic:
+                - link "order":
+                  - /url: /cart
+                  - generic:
+                    - img
+                  - generic: order
+            - generic:
+              - generic:
+                - link "Poin":
+                  - /url: /loyalty
+                  - generic:
+                    - img
+                  - generic: Poin
+            - generic:
+              - generic:
+                - link "Profil":
+                  - /url: /profile
+                  - generic:
+                    - img
+                  - generic: Profil
+  - button "Open Next.js Dev Tools" [ref=e7] [cursor=pointer]:
+    - img [ref=e8]

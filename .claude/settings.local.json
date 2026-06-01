@@ -25,7 +25,17 @@
       "PowerShell(Get-Process *)",
       "PowerShell(Start-Sleep -Seconds 3; Get-Content \"C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\tcs-dev2.log\" | Select-String -Pattern \"error|Error\" | Where-Object { $_ -notmatch \"middleware|lockfile|tracingRoot|Turbopack|webpack\" } | Select-Object -Last 5)",
       "PowerShell(New-Item *)",
-      "Bash(Copy-Item *)"
+      "Bash(Copy-Item *)",
+      "Bash(git commit -m 'chore: ultra-instinct session close — all 12 items resolved *)",
+      "PowerShell(Get-ChildItem \"C:\\\\Exodus\\\\Projects\\\\TCS App\\\\tcs-saas-app\\\\app\" -Recurse -File | Where-Object { $_.Extension -eq \".tsx\" -or $_.Extension -eq \".ts\" } | Select-Object -ExpandProperty FullName)",
+      "Bash(Get-Content \"C:\\\\Users\\\\kodec\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Exodus-Projects-TCS-App\\\\b30de607-3480-49ac-8e7b-f171e6c3697a\\\\tasks\\\\bzarhaggi.output\")",
+      "Bash(Select-Object -Last 60)",
+      "Bash(vercel --version)",
+      "Bash(npx vercel *)",
+      "Bash(xargs grep -l \"headers\")",
+      "mcp__plugin_playwright_playwright__browser_wait_for",
+      "mcp__plugin_playwright_playwright__browser_click",
+      "mcp__plugin_playwright_playwright__browser_snapshot"
     ]
   }
 }
