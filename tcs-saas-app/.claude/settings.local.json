@@ -25,7 +25,13 @@
       "Bash(npm ls *)",
       "Bash(git commit *)",
       "Bash(npx tsc *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); deps={**d.get\\('dependencies',{}\\),**d.get\\('devDependencies',{}\\)}; [print\\(k,v\\) for k in ['@ducanh2912/next-pwa','@serwist/next','serwist'] if k in deps and print\\(k, deps[k]\\)]\")",
+      "Read(//c/Exodus/Projects/TCS App/**)",
+      "Bash(ls .gitignore)",
+      "Bash(cat .gitignore)",
+      "Bash(git fetch *)",
+      "Bash(claude *)"
     ]
   }
 }
