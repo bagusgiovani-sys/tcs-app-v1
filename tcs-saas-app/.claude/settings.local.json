@@ -31,7 +31,9 @@
       "Bash(ls .gitignore)",
       "Bash(cat .gitignore)",
       "Bash(git fetch *)",
-      "Bash(claude *)"
+      "Bash(claude *)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Exodus\\\\Projects\\\\TCS App\\\\tcs-saas-app\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

@@ -6,7 +6,7 @@ import SplashScreen from '@/components/splash/SplashScreen'
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   return (
-    <SerwistProvider swUrl="/sw.js">
+    <SerwistProvider swUrl={process.env.NODE_ENV === 'production' ? '/sw.js' : undefined}>
       <SplashScreen
         logoSrc="/tcs-logo.png"
         introMs={2200}
