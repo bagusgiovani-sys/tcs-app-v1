@@ -5,7 +5,7 @@ const AUTH_ROUTES = ['/cart', '/checkout', '/order', '/loyalty']
 const ADMIN_ROUTES = ['/admin']
 const STAFF_ROUTES = ['/pos']
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(

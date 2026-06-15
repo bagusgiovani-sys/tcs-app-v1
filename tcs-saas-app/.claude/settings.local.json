@@ -33,7 +33,11 @@
       "Bash(git fetch *)",
       "Bash(claude *)",
       "Bash(Get-ChildItem -Path \"C:\\\\Exodus\\\\Projects\\\\TCS App\\\\tcs-saas-app\" -Directory)",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "mcp__claude_ai_Context7__query-docs",
+      "Bash(npx @next/codemod@latest middleware-to-proxy . --dry-run)",
+      "Bash(Remove-Item middleware.ts)"
     ]
   }
 }
