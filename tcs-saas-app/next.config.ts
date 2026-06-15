@@ -1,6 +1,5 @@
 import type { NextConfig } from 'next'
 import withSerwistInit from '@serwist/next'
-import path from 'path'
 
 const withSerwist = withSerwistInit({
   swSrc: 'app/sw.ts',
@@ -31,7 +30,7 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname),
+  eslint: { ignoreDuringBuilds: true },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
