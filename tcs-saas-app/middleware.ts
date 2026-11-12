@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { SHOP_ID } from '@/lib/utils/constants'
 
 const AUTH_ROUTES = ['/cart', '/checkout', '/order', '/loyalty']
 const ADMIN_ROUTES = ['/admin']
@@ -42,11 +43,15 @@ export async function middleware(request: NextRequest) {
   if (needsAdmin || needsStaff) {
     const { data: profile } = await supabase
       .from('users')
-      .select('role')
+      .select('role, org_id')
       .eq('id', user!.id)
       .single()
 
     const role = profile?.role
+
+    if (!SHOP_ID || profile?.org_id !== SHOP_ID) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
 
     if (needsAdmin && role !== 'admin') {
       return NextResponse.redirect(new URL('/', request.url))

@@ -85,6 +85,10 @@
 
 ## Current Status
 
-**Last completed:** Step 29 — mobile QA complete
-**Currently working on:** Step 30 — deploy to Vercel
-**Next action:** Step 30 — set env vars in Vercel dashboard, push to main, verify deploy
+**2026-11-12 review:** Deployment is blocked on security remediation and staging verification. See [progress and gateway security review](docs/security-progress-review-2026-11-12.md) for current findings and the ordered next steps. The historical status below predates this review.
+
+**2026-11-12 follow-up:** Local fixes now cover customer payment acknowledgement, product-action admin/shop checks and input validation, local redirects, and private-data service-worker caching. Next.js/Serwist patches remove the critical audit finding; 11 production dependency findings remain. Four security regression tests pass. Database role protection, trusted transactional order creation and staging verification remain release blockers. See the review for validation details and the read-only SQL inventory.
+
+**Last completed:** Application security hardening; production build, TypeScript, four security tests and anonymous HTTP checks passed.
+**Currently working on:** Database authorization and transactional order creation; Step 30 remains blocked on security validation.
+**Next action:** Prepare and test database migrations for protected profile fields and catalog-priced atomic orders; inspect staging permissions before applying changes.

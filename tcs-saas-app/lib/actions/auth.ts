@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { safeRedirect } from '@/lib/utils/safe-redirect'
 
 export async function login(formData: FormData) {
   const supabase = await createClient()
@@ -21,7 +22,7 @@ export async function login(formData: FormData) {
     return { error: error.message }
   }
 
-  redirect(redirectTo || '/')
+  redirect(safeRedirect(redirectTo))
 }
 
 export async function register(formData: FormData) {

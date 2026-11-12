@@ -86,16 +86,7 @@ export default function CheckoutPage() {
   async function handleConfirmPayment() {
     if (!orderId) return
     setLoading(true)
-    const supabase = createClient()
-    const { error: updateErr } = await supabase
-      .from('orders')
-      .update({ payment_status: 'paid', status: 'confirmed' })
-      .eq('id', orderId)
-    if (updateErr) {
-      setError('Gagal konfirmasi pembayaran, coba lagi')
-      setLoading(false)
-      return
-    }
+    // Customer acknowledgement is not proof of payment. Staff verify receipt.
     clear()
     router.push(`/order/${orderId}`)
   }

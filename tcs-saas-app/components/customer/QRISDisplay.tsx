@@ -15,7 +15,7 @@ export default function QRISDisplay({ total, onConfirmPayment, isPending }: QRIS
   return (
     <div className="flex flex-col items-center gap-4">
       <p className="font-sans text-brand-subtext text-sm text-center">
-        Scan QRIS di bawah, lalu tap tombol konfirmasi
+        Scan QRIS di bawah. Pembayaran akan diverifikasi oleh kasir.
       </p>
       <p className="font-display font-semibold text-2xl text-brand-text">
         Rp {total.toLocaleString('id-ID')}
