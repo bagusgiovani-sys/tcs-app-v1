@@ -93,3 +93,26 @@ test('service worker never caches pages or API responses and removes legacy data
   await completion
   assert.deepEqual(deleted, ['pages', 'pages-rsc', 'cross-origin', 'next-data', 'static-data-assets'])
 })
+
+test('checkout transmits no prices, uses trusted total, and never falls back to direct writes', async () => {
+  const { createTrustedOrder, orderAttempt } = load('lib/orders/create-order.ts', {
+    '@/lib/utils/constants': { SHOP_ID: 'shop-a' },
+  }, { crypto: require('node:crypto').webcrypto })
+  const request = { items: [{ product_id: '30000000-0000-0000-0000-000000000001', quantity: 2, price: 1, total: 2 }],
+    type: 'pickup', paymentMethod: 'qris' }
+  const first = orderAttempt(request, null)
+  assert.equal(orderAttempt(request, first).key, first.key)
+  assert.notEqual(orderAttempt({ ...request, items: [{ ...request.items[0], quantity: 3 }] }, first).key, first.key)
+  let sent
+  const client = { rpc: async (name, args) => {
+    assert.equal(name, 'create_order'); sent = args
+    return { data: { id: '50000000-0000-0000-0000-000000000001', total: 36000 }, error: null }
+  } }
+  const result = await createTrustedOrder(client, request, first.key)
+  assert.equal(result.total, 36000)
+  assert.deepEqual(JSON.parse(JSON.stringify(sent.p_items)), [{ product_id: request.items[0].product_id, quantity: 2, notes: null }])
+  assert.equal(sent.p_idempotency_key, first.key)
+  assert.equal(sent.p_shop_id, 'shop-a')
+  await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ error: { message: 'missing RPC' } }) }, request, first.key))
+  await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ data: { id: 'bad', total: 1 } }) }, request, first.key))
+})

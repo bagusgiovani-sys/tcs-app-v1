@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { SHOP_ID } from '@/lib/utils/constants'
+import { createTrustedOrder, orderAttempt, type OrderAttempt, type OrderRequest } from '@/lib/orders/create-order'
 import MenuGrid from '@/components/pos/MenuGrid'
 import OrderBuilder from '@/components/pos/OrderBuilder'
 import dynamic from 'next/dynamic'
@@ -36,6 +37,10 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
   const [orderId, setOrderId] = useState<string | null>(null)
   const [showQRIS, setShowQRIS] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [orderTotal, setOrderTotal] = useState(0)
+  const attempt = useRef<OrderAttempt | null>(null)
+  const submitting = useRef(false)
 
   function addProduct(product: GridProduct) {
     setItems((prev) => {
@@ -46,54 +51,51 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
   }
 
   async function handleCheckout() {
-    if (items.length === 0) return
+    if (items.length === 0 || submitting.current || orderId) return
+    submitting.current = true
     setLoading(true)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return
-
-    const total = items.reduce((s, i) => s + i.price * i.quantity, 0)
-    const { data: order } = await supabase.from('orders').insert({
-      shop_id: SHOP_ID,
-      customer_id: user.id,
-      type: 'pickup',
-      status: 'pending',
-      payment_method: 'qris',
-      payment_status: 'pending',
-      subtotal: total,
-      total,
-    }).select('id').single()
-
-    if (order) {
-      const { error: itemsErr } = await supabase.from('order_items').insert(
-        items.map((i) => ({
-          order_id: order.id,
-          product_id: i.productId,
-          quantity: i.quantity,
-          unit_price: i.price,
-          subtotal: i.price * i.quantity,
-        }))
-      )
-      if (itemsErr) {
-        await supabase.from('orders').delete().eq('id', order.id)
-        setLoading(false)
-        return
+    setError(null)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Sesi berakhir. Silakan masuk kembali.')
+      const request: OrderRequest = {
+        items: items.map((item) => ({ product_id: item.productId, quantity: item.quantity })),
+        type: 'pickup', paymentMethod: 'qris',
       }
+      attempt.current = orderAttempt(request, attempt.current)
+      const order = await createTrustedOrder(supabase, request, attempt.current.key)
       setOrderId(order.id)
+      setOrderTotal(order.total)
       setShowQRIS(true)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Gagal membuat pesanan')
+    } finally {
+      submitting.current = false
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   async function handleConfirm() {
     if (!orderId) return
     setLoading(true)
-    const supabase = createClient()
-    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId).eq('shop_id', SHOP_ID)
-    setItems([])
-    setOrderId(null)
-    setShowQRIS(false)
-    setLoading(false)
+    setError(null)
+    try {
+      const supabase = createClient()
+      const { error: updateError } = await supabase.from('orders')
+        .update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId).eq('shop_id', SHOP_ID)
+        .select('id').single()
+      if (updateError) throw new Error('Gagal konfirmasi pembayaran. Periksa sesi dan coba lagi.')
+      setItems([])
+      setOrderId(null)
+      setShowQRIS(false)
+      attempt.current = null
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Gagal konfirmasi pembayaran')
+      setShowQRIS(false)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const gridProducts = products.map((p) => ({
@@ -103,26 +105,29 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
     imageUrl: p.image_url ?? undefined,
     isAvailable: p.is_available,
   }))
-  const total = items.reduce((s, i) => s + i.price * i.quantity, 0)
 
   return (
     <div className="min-h-dvh bg-brand-bg flex">
-      <div className="flex-1 overflow-y-auto">
+      <fieldset disabled={Boolean(orderId) || loading} className="flex-1 min-w-0 overflow-y-auto">
         <MenuGrid products={gridProducts} onSelect={addProduct} />
-      </div>
+      </fieldset>
       <div className="w-72 shrink-0">
-        <OrderBuilder
-          items={items}
-          onIncrement={(id) => setItems((prev) => prev.map((i) => i.productId === id ? { ...i, quantity: i.quantity + 1 } : i))}
-          onDecrement={(id) => setItems((prev) => prev.map((i) => i.productId === id ? { ...i, quantity: i.quantity - 1 } : i).filter((i) => i.quantity > 0))}
-          onCheckout={handleCheckout}
-          isLoading={loading}
-        />
+        {error && <p role="alert" className="p-4 text-red-400 text-sm">{error}</p>}
+        {orderId && !showQRIS && <button className="p-4 text-brand-accent" onClick={() => setShowQRIS(true)}>Lanjutkan pembayaran</button>}
+        <fieldset disabled={Boolean(orderId) || loading}>
+          <OrderBuilder
+            items={items}
+            onIncrement={(id) => setItems((prev) => prev.map((i) => i.productId === id ? { ...i, quantity: i.quantity + 1 } : i))}
+            onDecrement={(id) => setItems((prev) => prev.map((i) => i.productId === id ? { ...i, quantity: i.quantity - 1 } : i).filter((i) => i.quantity > 0))}
+            onCheckout={handleCheckout}
+            isLoading={loading}
+          />
+        </fieldset>
       </div>
       {orderId && (
         <POSQRISModal
           open={showQRIS}
-          total={total}
+          total={orderTotal}
           orderId={orderId}
           onConfirm={handleConfirm}
           onCancel={() => setShowQRIS(false)}

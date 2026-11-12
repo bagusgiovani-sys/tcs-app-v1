@@ -93,4 +93,6 @@
 **Currently working on:** Database authorization and transactional order creation; Step 30 remains blocked on security validation.
 
 **Git/security incident:** Initial hardening committed as `f1e7b6b`; clean containment merge pushed as `f39ea5f`. The remote forced update contained an executable loader in PostCSS configuration. Its code was rejected during integration. See [incident evidence and account follow-up](docs/security-incident-2026-11-12.md). Affected host/deployment exposure remains unverified.
-**Next action:** Prepare and test database migrations for protected profile fields and catalog-priced atomic orders; inspect staging permissions before applying changes.
+**Next action:** Identify staging, inspect its effective permissions and apply the tested migration there; verify real API/browser checkout and payment flows before merging the security branch.
+
+**Trusted orders branch:** `security/trusted-orders` now contains the profile/order permission migration, atomic catalog-priced order RPC, matching customer/POS integration, staff payment audit/status transitions and 14 passing local security tests. Production build, project TypeScript and changed-file ESLint pass; full lint has 43 existing errors and 3 warnings. See [rollout and staging checks](docs/trusted-orders-rollout.md). No live database migration has been applied; merge requires staging validation.

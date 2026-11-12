@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
 import dynamic from 'next/dynamic'
+import type { OrderQueueRow } from './_components/AdminOrderQueue'
 const AdminOrderQueue = dynamic(() => import('./_components/AdminOrderQueue'), {
   loading: () => (
     <div className="flex flex-col gap-3">
@@ -25,12 +26,12 @@ export default async function AdminOrdersPage() {
     .in('status', ['pending', 'confirmed', 'preparing', 'ready'])
     .order('created_at')
 
-  const mapped = (orders ?? []).map((o: any) => ({
+  const mapped = (orders ?? []).map((o: OrderQueueRow) => ({
     id: o.id,
     orderNumber: o.id.slice(-6).toUpperCase(),
-    customerName: o.users?.name ?? 'Tamu',
+    customerName: (Array.isArray(o.users) ? o.users[0]?.name : o.users?.name) ?? 'Tamu',
     type: o.type,
-    tableNumber: o.table_number,
+    tableNumber: o.table_number ?? undefined,
     itemCount: o.order_items?.length ?? 0,
     total: o.total,
     status: o.status,

@@ -6,6 +6,8 @@ Do not treat this application as production security-ready. This review found re
 
 ## Follow-up implementation (same day)
 
+A further implementation is available on `security/trusted-orders`: see [trusted order rollout](trusted-orders-rollout.md). It addresses profile writes, policy recursion, direct order bypasses, trusted pricing/atomicity and staff payment transitions in a tested local migration, with matching customer/POS/admin code. These findings remain live release blockers until the migration and app are validated on staging and deployed together. The remote build-loader incident is documented separately in [incident evidence](security-incident-2026-11-12.md).
+
 The findings below describe the original review. This follow-up changes the local application, not the deployed database:
 
 - Removed the customer checkout update that attempted to mark QRIS payments paid/confirmed. The acknowledgement now opens the pending order; staff must verify payment separately. No customer notification or payment-provider callback was added.

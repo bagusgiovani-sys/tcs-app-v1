@@ -47,7 +47,7 @@ export default function OrderCard({
 }: OrderCardProps) {
   const next = nextStatus[status]
   const isPaid = paymentStatus === 'paid'
-  const needsCashConfirm = paymentMethod === 'cash' && !isPaid && status === 'pending'
+  const needsPaymentConfirm = !isPaid && status === 'pending'
 
   return (
     <div className="bg-brand-card border border-brand-border rounded-2xl p-4 flex flex-col gap-3">
@@ -73,23 +73,15 @@ export default function OrderCard({
           Rp {total.toLocaleString('id-ID')}
         </p>
         <div className="flex gap-2">
-          {needsCashConfirm && onConfirmPayment && (
+          {needsPaymentConfirm && onConfirmPayment && (
             <button
               onClick={() => onConfirmPayment(id)}
               className="bg-green-500 text-white font-sans font-semibold text-xs px-3 py-1.5 rounded-lg"
             >
-              Terima Bayar
+              {paymentMethod === 'cash' ? 'Terima Bayar' : 'Verifikasi QRIS'}
             </button>
           )}
           {next && onStatusChange && isPaid && (
-            <button
-              onClick={() => onStatusChange(id, next)}
-              className="bg-brand-accent text-brand-on-accent font-sans font-semibold text-sm px-4 py-1.5 rounded-lg"
-            >
-              {nextLabel[status]}
-            </button>
-          )}
-          {next && onStatusChange && !isPaid && paymentMethod === 'qris' && (
             <button
               onClick={() => onStatusChange(id, next)}
               className="bg-brand-accent text-brand-on-accent font-sans font-semibold text-sm px-4 py-1.5 rounded-lg"

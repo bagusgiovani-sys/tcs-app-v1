@@ -21,13 +21,26 @@ interface MappedOrder {
   createdAt: string
 }
 
-function mapOrder(o: any): MappedOrder {
+export interface OrderQueueRow {
+  id: string
+  users: { name: string | null } | { name: string | null }[] | null
+  type: 'pickup' | 'dine_in'
+  table_number: string | null
+  order_items: { id: string }[] | null
+  total: number
+  status: OrderStatus
+  payment_method: string
+  payment_status: string
+  created_at: string
+}
+
+function mapOrder(o: OrderQueueRow): MappedOrder {
   return {
     id: o.id,
     orderNumber: o.id.slice(-6).toUpperCase(),
-    customerName: o.users?.name ?? 'Tamu',
+    customerName: (Array.isArray(o.users) ? o.users[0]?.name : o.users?.name) ?? 'Tamu',
     type: o.type,
-    tableNumber: o.table_number,
+    tableNumber: o.table_number ?? undefined,
     itemCount: o.order_items?.length ?? 0,
     total: o.total,
     status: o.status,
@@ -39,6 +52,7 @@ function mapOrder(o: any): MappedOrder {
 
 export default function AdminOrderQueue({ initialOrders }: { initialOrders: MappedOrder[] }) {
   const [orders, setOrders] = useState(initialOrders)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
@@ -78,8 +92,11 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
   }, [])
 
   async function handleStatusChange(id: string, status: OrderStatus) {
+    setError(null)
     const supabase = createClient()
-    await supabase.from('orders').update({ status }).eq('id', id).eq('shop_id', SHOP_ID)
+    const { error: updateError } = await supabase.from('orders').update({ status }).eq('id', id).eq('shop_id', SHOP_ID)
+      .select('id').single()
+    if (updateError) { setError('Gagal memperbarui pesanan. Periksa pembayaran dan coba lagi.'); return }
     setOrders((prev) =>
       prev
         .map((o) => o.id === id ? { ...o, status } : o)
@@ -88,10 +105,16 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
   }
 
   async function handleConfirmPayment(id: string) {
+    setError(null)
     const supabase = createClient()
-    await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id).eq('shop_id', SHOP_ID)
+    const { error: updateError } = await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id).eq('shop_id', SHOP_ID)
+      .select('id').single()
+    if (updateError) { setError('Gagal konfirmasi pembayaran. Periksa sesi dan coba lagi.'); return }
     setOrders((prev) => prev.map((o) => o.id === id ? { ...o, paymentStatus: 'paid', status: 'confirmed' } : o))
   }
 
-  return <OrderQueue orders={orders} onStatusChange={handleStatusChange} onConfirmPayment={handleConfirmPayment} />
+  return <>
+    {error && <p role="alert" className="text-red-400 text-sm">{error}</p>}
+    <OrderQueue orders={orders} onStatusChange={handleStatusChange} onConfirmPayment={handleConfirmPayment} />
+  </>
 }

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/stores/cart'
 import { createClient } from '@/lib/supabase/client'
-import { SHOP_ID } from '@/lib/utils/constants'
+import { createTrustedOrder, orderAttempt, type OrderAttempt, type OrderRequest } from '@/lib/orders/create-order'
 import dynamic from 'next/dynamic'
 const QRISDisplay = dynamic(() => import('@/components/customer/QRISDisplay'), { ssr: false })
 import Button from '@/components/ui/Button'
@@ -25,62 +25,44 @@ export default function CheckoutPage() {
   const [tableNumber, setTableNumber]   = useState('')
   const [notes, setNotes]               = useState('')
   const [orderId, setOrderId]           = useState<string | null>(null)
+  const [orderTotal, setOrderTotal] = useState(0)
+  const attempt = useRef<OrderAttempt | null>(null)
+  const submitting = useRef(false)
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState<string | null>(null)
 
   async function handlePlaceOrder() {
+    if (submitting.current || items.length === 0) return
+    submitting.current = true
     setLoading(true)
     setError(null)
-    const supabase = createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { router.push('/auth/login?redirectTo=/checkout'); return }
-
-    const subtotal = total()
-    const { data: order, error: orderErr } = await supabase
-      .from('orders')
-      .insert({
-        shop_id: SHOP_ID,
-        customer_id: user.id,
-        type: orderType,
-        table_number: orderType === 'dine_in' ? tableNumber : null,
-        status: 'pending',
-        payment_method: paymentMethod,
-        payment_status: 'pending',
-        subtotal,
-        total: subtotal,
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { router.push('/auth/login?redirectTo=/checkout'); return }
+      const request: OrderRequest = {
+        items: items.map((item) => ({ product_id: item.productId, quantity: item.quantity,
+          notes: item.size ? `Ukuran: ${item.size}` : null })),
+        type: orderType, paymentMethod, tableNumber: orderType === 'dine_in' ? tableNumber : null,
         notes: notes || null,
-      })
-      .select('id')
-      .single()
+      }
+      attempt.current = orderAttempt(request, attempt.current)
+      const order = await createTrustedOrder(supabase, request, attempt.current.key)
+      setOrderTotal(order.total)
 
-    if (orderErr || !order) { setError('Gagal membuat pesanan'); setLoading(false); return }
+      if (paymentMethod === 'cash') {
+        clear()
+        router.push(`/order/${order.id}`)
+        return
+      }
 
-    const { error: itemsErr } = await supabase.from('order_items').insert(
-      items.map((item) => ({
-        order_id: order.id,
-        product_id: item.productId,
-        quantity: item.quantity,
-        unit_price: item.price,
-        subtotal: item.price * item.quantity,
-        notes: item.size ? `Ukuran: ${item.size}` : null,
-      }))
-    )
-
-    if (itemsErr) {
-      await supabase.from('orders').delete().eq('id', order.id)
-      setError('Gagal membuat pesanan, coba lagi')
+      setOrderId(order.id)
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : 'Gagal membuat pesanan')
+    } finally {
+      submitting.current = false
       setLoading(false)
-      return
     }
-
-    if (paymentMethod === 'cash') {
-      clear()
-      router.push(`/order/${order.id}`)
-      return
-    }
-
-    setOrderId(order.id)
-    setLoading(false)
   }
 
   async function handleConfirmPayment() {
@@ -96,7 +78,7 @@ export default function CheckoutPage() {
       <div className="px-5 pt-14 flex flex-col gap-6">
         <h1 className="font-sans font-bold text-xl text-brand-text">Pembayaran QRIS</h1>
         <QRISDisplay
-          total={total()}
+          total={orderTotal}
           onConfirmPayment={handleConfirmPayment}
           isPending={loading}
         />

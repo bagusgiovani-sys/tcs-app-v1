@@ -29,7 +29,7 @@ export default function POSQRISModal({ open, total, orderId, onConfirm, onCancel
           )}
         </div>
         <div className="flex gap-3 w-full">
-          <Button variant="secondary" fullWidth onClick={onCancel}>Batal</Button>
+          <Button variant="secondary" fullWidth onClick={onCancel}>Tutup</Button>
           <Button fullWidth onClick={onConfirm} disabled={isLoading}>
             {isLoading ? 'Konfirmasi...' : 'Sudah Dibayar'}
           </Button>
