@@ -91,4 +91,6 @@
 
 **Last completed:** Application security hardening; production build, TypeScript, four security tests and anonymous HTTP checks passed.
 **Currently working on:** Database authorization and transactional order creation; Step 30 remains blocked on security validation.
+
+**Git/security incident:** Initial hardening committed as `f1e7b6b`; clean containment merge pushed as `f39ea5f`. The remote forced update contained an executable loader in PostCSS configuration. Its code was rejected during integration. See [incident evidence and account follow-up](docs/security-incident-2026-11-12.md). Affected host/deployment exposure remains unverified.
 **Next action:** Prepare and test database migrations for protected profile fields and catalog-priced atomic orders; inspect staging permissions before applying changes.
