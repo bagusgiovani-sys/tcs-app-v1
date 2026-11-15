@@ -1,6 +1,7 @@
 # Build Progress — TCS Coffee App
-> Started: 2026-05-15 | Last updated: 2026-05-21
-> Read this at the start of EVERY Claude Code session before touching any file.
+> Started: 2026-05-15 | Last updated: 2026-11-15
+> Main project tracker: read Current Status and the Next Execution Plan before starting work.
+> The original 30-step checklist below is historical implementation progress, not proof of production readiness.
 
 ## Status Legend
 - [ ] Pending
@@ -85,14 +86,121 @@
 
 ## Current Status
 
-**2026-11-12 review:** Deployment is blocked on security remediation and staging verification. See [progress and gateway security review](docs/security-progress-review-2026-11-12.md) for current findings and the ordered next steps. The historical status below predates this review.
+**Reviewed: 2026-11-15. Main project tracker:** this file owns current status, priorities and completion criteria. [Improvement history](ultra-progress.md) records earlier polish; the security documents below hold detailed evidence and rollout procedures.
 
-**2026-11-12 follow-up:** Local fixes now cover customer payment acknowledgement, product-action admin/shop checks and input validation, local redirects, and private-data service-worker caching. Next.js/Serwist patches remove the critical audit finding; 11 production dependency findings remain. Four security regression tests pass. Database role protection, trusted transactional order creation and staging verification remain release blockers. See the review for validation details and the read-only SQL inventory.
+**Overall:** Core customer, admin and POS implementation exists. The original checklist records 29/30 steps complete, but production readiness is blocked on security follow-up and hosted staging verification. Step 30 remains open; this review did not establish the current live deployment state.
 
-**Last completed:** Application security hardening; production build, TypeScript, four security tests and anonymous HTTP checks passed.
-**Currently working on:** Database authorization and transactional order creation; Step 30 remains blocked on security validation.
+**Latest committed work:** `1eab648` (2026-11-12), on local branch `security/trusted-orders`. No newer local commit was found during this review. Remote branch/deployment state was not refreshed.
 
-**Git/security incident:** Initial hardening committed as `f1e7b6b`; clean containment merge pushed as `f39ea5f`. The remote forced update contained an executable loader in PostCSS configuration. Its code was rejected during integration. See [incident evidence and account follow-up](docs/security-incident-2026-11-12.md). Affected host/deployment exposure remains unverified.
-**Next action:** Identify staging, inspect its effective permissions and apply the tested migration there; verify real API/browser checkout and payment flows before merging the security branch.
+### Last progress recap
 
-**Trusted orders branch:** `security/trusted-orders` now contains the profile/order permission migration, atomic catalog-priced order RPC, matching customer/POS integration, staff payment audit/status transitions and 14 passing local security tests. Production build, project TypeScript and changed-file ESLint pass; full lint has 43 existing errors and 3 warnings. See [rollout and staging checks](docs/trusted-orders-rollout.md). No live database migration has been applied; merge requires staging validation.
+- Customer browsing, product detail, cart, checkout, order history/status, profile and loyalty screens are implemented, with admin dashboard/menu/orders and POS. Earlier logs record theme/mobile QA and the Serwist migration.
+- Application hardening (`f1e7b6b`) added admin/shop checks and product input validation, safe local redirects, private-data cache exclusions, and customer payment acknowledgement that leaves payment pending for staff verification.
+- Remote build-loader containment (`f39ea5f`, evidence in `544b73b`) retained the clean PostCSS configuration. Whether any host or deployment executed the injected revision, and whether exposed credentials were rotated, remains unverified. See [incident and account follow-up](docs/security-incident-2026-11-12.md).
+- Trusted orders (`1eab648`) added the migration at `supabase/migrations/202611120001_trusted_orders.sql`: protected profile authorization fields, catalog-derived pricing, atomic order/item creation, bounded input checks, idempotency and removal of direct browser order creation bypasses.
+- Customer checkout and POS now use the same trusted RPC. Staff payment/status transitions record verification actor/time, reject invalid transitions, and require a persisted row before UI success. POS can resume a pending payment; QRIS uses the saved database total.
+- No live database migration or hosted staging acceptance run is recorded. Local implementation is complete for this slice; deployed correctness is not established.
+
+### Validation baseline
+
+These are **recorded results from 2026-11-12**, not checks rerun on 2026-11-15:
+
+| Check | Last recorded result | Remaining limit |
+| --- | --- | --- |
+| Security tests | 14 passed: 9 PostgreSQL/PGlite + 5 application tests | Hosted Auth/Data API/Realtime/Storage and concurrent sessions still need verification |
+| Production build | Passed; Next.js 15.5.29, 19 pages generated | Build skips ESLint; parent workspace lockfile warning remains |
+| Project TypeScript and changed-file ESLint | Passed | Does not establish full repository lint health |
+| Full lint | 43 errors and 3 warnings | Existing auth/splash/UI debt remains |
+| Production dependency audit | 11 findings: 0 critical, 8 high, 3 moderate | Historical count; rerun and assess current exposure before release |
+| Anonymous HTTP smoke checks | Login 200; protected routes redirect; security headers present | Authenticated role, payment and tenant flows untested on staging |
+
+**Existing uncommitted work at review start:** root `.claude/settings.local.json`, `components/customer/ProductCard.tsx` (removed Image import), and `tsconfig.json` (including JSX setting). The duplicate-order follow-up restored the missing Image import because it broke TypeScript; the settings and tsconfig changes remain preserved. Review outstanding changes before preparing the release.
+
+## Next Execution Plan
+
+Work through the following gates in order. Local lint/dependency cleanup can proceed while staging/account information is being collected. Record evidence and date before checking an item off.
+
+### 1. Establish a trusted environment and identify staging
+
+- [ ] Investigate whether machines, CI or deployments ran the injected revision; preserve build/access evidence and complete any required account/credential remediation from the incident document.
+- [ ] Identify the isolated Supabase staging project, matching application preview URL, intended production project and release owner. Do not assume the currently configured project is staging.
+- [ ] Prepare disposable customer A/B, shop A staff/admin and shop B staff/admin accounts. Keep credentials out of progress logs.
+- [ ] Review the three existing uncommitted files and decide which changes belong in the release.
+
+**Done when:** environment identities and incident disposition are recorded, a trusted worker is available, and staging accounts can be used safely. Account/hosting access is needed to establish this evidence.
+
+### 2. Inspect the effective staging database and apply the migration
+
+- [ ] Save a staging backup and run the read-only `supabase/security-inspection.sql` inventory.
+- [ ] Compare effective policies, column/table grants, callable definer functions, triggers and storage rules with the checked-in schema. Review custom policies on users/products/orders/order_items because the migration replaces them.
+- [ ] Inspect legacy payment/status inconsistencies and loyalty triggers; document how historical records will be handled without inventing payment evidence.
+- [ ] Apply `202611120001_trusted_orders.sql` transactionally on staging and verify PostgREST exposes the new RPC. Avoid replaying legacy setup scripts that restore permissive policies.
+
+**Done when:** the reviewed migration is present in staging, grants/policies match the intended design, the RPC is callable by the intended identities, and backup/recovery evidence is saved. Follow [trusted orders rollout](docs/trusted-orders-rollout.md) for the procedure.
+
+### 3. Prove authorization and order integrity through the hosted API
+
+- [ ] Exercise anonymous, customer, staff and admin sessions directly through the Data API, including expired sessions and cross-shop/customer access attempts.
+- [ ] Verify role/org escalation, direct order/item writes, forged payment/status fields and unauthorized product writes fail.
+- [ ] Verify catalog pricing and quantity/product/shop validation, and force a line-item failure to establish transaction rollback.
+- [ ] Send concurrent identical requests with one idempotency key: expect one order and one set of lines. Reuse the key with a different payload: expect rejection.
+- [ ] Verify authorized payment confirmation stores actor/time; repeated confirmation preserves evidence, invalid transitions fail, and loyalty is not credited twice.
+
+**Done when:** every relevant case in the [security acceptance matrix](docs/security-progress-review-2026-11-12.md#acceptance-matrix) has a dated staging result and any failure has been fixed and retested.
+
+### 4. Verify complete customer and staff browser flows
+
+- [ ] Deploy the matching application branch to staging after the database migration.
+- [ ] Complete customer QRIS and cash flows, including acknowledgement that stays pending until staff verification, saved totals after catalog price changes, and order history/status updates.
+- [ ] Complete POS order creation, payment-sheet close/resume, admin confirmation and order progression; verify errors and zero-row mutations do not show success.
+- [ ] Exercise network failures/retries and page reloads. Saved attempt keys and pending-order recovery are now implemented locally; verify them in real browsers, including concurrent tabs, storage failure, and lost responses with changed carts. Separate browser profiles/devices still have separate attempts.
+- [ ] Check Realtime updates, logout/account switching, legacy service-worker upgrades and offline navigation for private-data exposure.
+- [ ] Recheck mobile layout and the four supported theme states on affected flows.
+
+**Done when:** real customer/admin/POS flows pass with persisted database evidence, including payment audit and reward behavior.
+
+### 5. Close remaining release-quality gaps
+
+- [ ] Rerun the dependency audit, patch compatible affected packages and record the disposition of each remaining finding; do not treat the old count as current.
+- [ ] Resolve tenant storage-path permissions and verify access with cross-shop identities.
+- [ ] Establish and test rate limits, security-event logging/alerts, hosting access controls and backup recovery. Record any remaining CSP hardening decision.
+- [ ] Resolve full-project lint failures and warnings; resolve the workspace tracing-root warning and make source lint an explicit release check.
+- [ ] Run `npm run test:security`, full lint, production build and TypeScript sequentially where generated build types are involved; include the dedicated service-worker type check. Record exact commands/results and the tested commit.
+
+**Done when:** release checks pass, security findings have documented dispositions, and there are no unresolved release blockers.
+
+### 6. Release database and application together
+
+- [ ] Review the final diff and staging evidence before merging `security/trusted-orders` into main.
+- [ ] Take the production backup and apply the reviewed production database migration before deploying application code that requires the RPC.
+- [ ] Verify production environment variables, deployed commit and clean build provenance; execute customer/admin/POS smoke checks and monitor errors, payment audits and order duplication.
+- [ ] Record the release URL, revision, migration, validation evidence and recovery procedure; then mark Step 30 complete.
+
+**Done when:** production smoke checks pass and the release record is complete. Recovery must preserve the security boundary: the old UI cannot safely be restored alone after direct INSERT privileges are revoked; fix forward or use a tested coordinated restore.
+
+### After the release gates
+
+- [ ] Reconcile schema/setup documentation with the tested migration path so future environments do not restore legacy permissions.
+- [ ] Prioritize admin voucher/loyalty management if needed; these management screens are not part of the completed implementation.
+- [ ] Decide whether payment automation is a separate future feature. The current MVP remains static QRIS with staff verification.
+
+## Tracking Rules and Latest Review
+
+- Update this file at the end of each implementation session: completed work, commit/branch, commands and outcomes, remaining blockers and the next concrete action.
+- Keep implementation, local verification, staging verification and production deployment as separate claims. Link evidence rather than marking a task done based on code presence alone.
+- Preserve the original phase/session history; use this current section for release decisions. Older security findings describe their review date, with later changes documented in their follow-ups.
+
+**2026-11-15 documentation review:** reconciled local Git history, working-tree changes, build/improvement trackers and security/rollout documents. Updated this tracker and corrected stale improvement guidance. No application tests, live API checks, database migration, merge or deployment was performed.
+
+**Next concrete action:** establish incident follow-up status and identify isolated staging, then run the read-only database inventory. In parallel with gathering that access, the next local implementation task is lint/dependency cleanup and review of the existing uncommitted changes.
+
+### 2026-11-15 implementation follow-up: duplicate orders and payment confirmation
+
+- [x] Persist checkout attempt keys across reloads, scoped to account/shop/customer or POS; store only payload digests and keys.
+- [x] Coordinate active submissions with Web Locks and block checkout until pending-order recovery completes. Reuse the saved database order instead of showing a second order after refresh.
+- [x] Add immediate POS/admin mutation locks, disable busy admin buttons, and conditionally confirm only pending unpaid orders. Already-paid retries read current status without repeating the effective payment update.
+- [x] Preserve uncertain attempts and reject changed payloads; release confirmed validation rejections for correction. Restore the existing missing ProductCard Image import to unblock type checking.
+- [x] Local verification: `npm.cmd run test:security` (19 passed), scoped ESLint, `npx.cmd tsc --noEmit --incremental false`, production build and `git diff --check` passed. Existing workspace-root warning remains; full lint/audit were not rerun.
+- [ ] Hosted staging verification and real multi-tab browser acceptance remain pending. No migration, merge or deployment performed.
+
+See [duplicate-submission details and limits](docs/trusted-orders-rollout.md#duplicate-submission-follow-up-2026-11-15). Static QRIS still relies on staff verification and cannot prevent repeated transfers inside an external wallet.

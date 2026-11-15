@@ -1,5 +1,5 @@
 # Improvement Progress
-> Initiated: 2026-05-22 | Last updated: 2026-05-22
+> Initiated: 2026-05-22 | Last updated: 2026-11-15
 > Read this at the start of every Ultra-Instinct session before touching any file.
 
 ## Status Legend
@@ -59,14 +59,14 @@
 
 ---
 
-## Action Required (user, not auto-fixable)
+## Historical Action Items (superseded by release plan)
 
-- **[DB] Apply RLS SQL to Supabase** — file ready at `supabase-fix-products-public.sql`, paste into Supabase SQL Editor. Products won't show on home page until this runs.
-- **[DEPLOY] Vercel** — connect repo and deploy when ready.
-
----
+The earlier instruction to apply `supabase-fix-products-public.sql` and deploy directly is superseded by the trusted-orders migration and staging verification plan. Do not blindly replay legacy policy/setup scripts; inspect effective staging permissions first.
 
 ## Current Status
-**Last completed:** Session 1 — all 12 items
-**Currently working on:** —
-**Next action:** Apply Supabase RLS SQL, then Vercel deploy
+
+**Reviewed 2026-11-15:** Historical improvement milestones 1-6 are recorded complete, most recently in Session 2 on 2026-05-31. Further application and database security changes were committed on 2026-11-12.
+
+**Main tracker:** [build-progress.md](build-progress.md#current-status) contains the current recap, validation baseline and detailed next execution plan. Use it for project status and release decisions.
+
+**Next action:** establish trusted-environment/incident status, identify staging, inspect effective database permissions, and validate the trusted-orders migration and application together. Deployment remains pending those release gates; local test success is not staging verification.

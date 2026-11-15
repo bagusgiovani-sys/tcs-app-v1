@@ -1,3 +1,7 @@
+## Project progress
+
+See [build-progress.md](build-progress.md#current-status) for the current status, latest recap and detailed next-step plan. [ultra-progress.md](ultra-progress.md) preserves the earlier improvement history. Database and application release checks are in [trusted orders rollout](docs/trusted-orders-rollout.md).
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

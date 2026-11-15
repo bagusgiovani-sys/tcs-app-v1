@@ -9,13 +9,8 @@ export interface OrderRequest {
   notes?: string | null
 }
 
-export interface OrderAttempt { signature: string; key: string }
-
-/** Keep the same key after a lost response; changed carts get a new key. */
-export function orderAttempt(request: OrderRequest, previous: OrderAttempt | null): OrderAttempt {
-  const signature = JSON.stringify(request)
-  return previous?.signature === signature ? previous : { signature, key: crypto.randomUUID() }
-}
+/** A confirmed database rejection, rather than an uncertain network outcome. */
+export class OrderRejectedError extends Error {}
 
 export async function createTrustedOrder(
   supabase: ReturnType<typeof createClient>, request: OrderRequest, key: string,
@@ -29,7 +24,14 @@ export async function createTrustedOrder(
     p_table_number: request.tableNumber ?? null,
     p_notes: request.notes ?? null,
   })
-  if (error) throw new Error('Gagal membuat pesanan. Silakan coba lagi atau hubungi kasir.')
+  if (error) {
+    const validationMessages = ['Invalid shop or request key', 'Invalid order details', 'Items must be an array',
+      'Invalid item count', 'Invalid order item', 'Invalid quantity', 'Product unavailable', 'Order total too large']
+    if ((error.code === '22023' && validationMessages.includes(error.message)) || error.code === '42501') {
+      throw new OrderRejectedError('Pesanan ditolak. Periksa produk, jumlah, meja, dan sesi lalu coba lagi.')
+    }
+    throw new Error('Gagal membuat pesanan. Silakan coba lagi atau hubungi kasir.')
+  }
   if (!data || typeof data.id !== 'string' || !/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(data.id) ||
       typeof data.total !== 'number' || !Number.isFinite(data.total) || data.total < 0) {
     throw new Error('Gagal memverifikasi pesanan. Silakan hubungi kasir.')

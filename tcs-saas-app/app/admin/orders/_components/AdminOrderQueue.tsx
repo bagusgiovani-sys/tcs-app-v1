@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { SHOP_ID } from '@/lib/utils/constants'
 import OrderQueue from '@/components/admin/OrderQueue'
+import { confirmOrderPayment } from '@/lib/orders/confirm-payment'
 
 type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
 
@@ -52,6 +53,8 @@ function mapOrder(o: OrderQueueRow): MappedOrder {
 
 export default function AdminOrderQueue({ initialOrders }: { initialOrders: MappedOrder[] }) {
   const [orders, setOrders] = useState(initialOrders)
+  const mutations = useRef(new Set<string>())
+  const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -91,30 +94,41 @@ export default function AdminOrderQueue({ initialOrders }: { initialOrders: Mapp
     return () => { supabase.removeChannel(channel) }
   }, [])
 
-  async function handleStatusChange(id: string, status: OrderStatus) {
+  async function mutateOrder(id: string, action: () => Promise<void>) {
+    if (mutations.current.has(id)) return
+    mutations.current.add(id)
+    setBusyIds(new Set(mutations.current))
     setError(null)
-    const supabase = createClient()
-    const { error: updateError } = await supabase.from('orders').update({ status }).eq('id', id).eq('shop_id', SHOP_ID)
-      .select('id').single()
-    if (updateError) { setError('Gagal memperbarui pesanan. Periksa pembayaran dan coba lagi.'); return }
-    setOrders((prev) =>
-      prev
-        .map((o) => o.id === id ? { ...o, status } : o)
-        .filter((o) => !['completed', 'cancelled'].includes(o.status))
-    )
+    try { await action() }
+    catch (cause) { setError(cause instanceof Error ? cause.message : 'Gagal memperbarui pesanan.') }
+    finally {
+      mutations.current.delete(id)
+      setBusyIds(new Set(mutations.current))
+    }
+  }
+
+  async function handleStatusChange(id: string, status: OrderStatus) {
+    await mutateOrder(id, async () => {
+      const supabase = createClient()
+      const { error: updateError } = await supabase.from('orders').update({ status }).eq('id', id).eq('shop_id', SHOP_ID)
+        .select('id').single()
+      if (updateError) throw new Error('Gagal memperbarui pesanan. Periksa pembayaran dan coba lagi.')
+      setOrders((prev) => prev.map((o) => o.id === id ? { ...o, status } : o)
+        .filter((o) => !['completed', 'cancelled'].includes(o.status)))
+    })
   }
 
   async function handleConfirmPayment(id: string) {
-    setError(null)
-    const supabase = createClient()
-    const { error: updateError } = await supabase.from('orders').update({ payment_status: 'paid', status: 'confirmed' }).eq('id', id).eq('shop_id', SHOP_ID)
-      .select('id').single()
-    if (updateError) { setError('Gagal konfirmasi pembayaran. Periksa sesi dan coba lagi.'); return }
-    setOrders((prev) => prev.map((o) => o.id === id ? { ...o, paymentStatus: 'paid', status: 'confirmed' } : o))
+    await mutateOrder(id, async () => {
+      const current = await confirmOrderPayment(createClient(), id)
+      setOrders((prev) => prev.map((o) => o.id === id
+        ? { ...o, paymentStatus: current.payment_status, status: current.status as OrderStatus } : o)
+        .filter((o) => !['completed', 'cancelled'].includes(o.status)))
+    })
   }
 
   return <>
     {error && <p role="alert" className="text-red-400 text-sm">{error}</p>}
-    <OrderQueue orders={orders} onStatusChange={handleStatusChange} onConfirmPayment={handleConfirmPayment} />
+    <OrderQueue busyIds={busyIds} orders={orders} onStatusChange={handleStatusChange} onConfirmPayment={handleConfirmPayment} />
   </>
 }

@@ -8,7 +8,7 @@ const ts = require('typescript')
 
 function load(relative, dependencies = {}, globals = {}) {
   const source = fs.readFileSync(path.join(__dirname, '..', relative), 'utf8')
-  const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText
+  const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2017 } }).outputText
   const exports = {}
   vm.runInNewContext(code, { exports, URL, ...globals, require: (id) => {
     if (!(id in dependencies)) throw new Error(`Unexpected import: ${id}`)
@@ -95,14 +95,12 @@ test('service worker never caches pages or API responses and removes legacy data
 })
 
 test('checkout transmits no prices, uses trusted total, and never falls back to direct writes', async () => {
-  const { createTrustedOrder, orderAttempt } = load('lib/orders/create-order.ts', {
+  const { createTrustedOrder, OrderRejectedError } = load('lib/orders/create-order.ts', {
     '@/lib/utils/constants': { SHOP_ID: 'shop-a' },
   }, { crypto: require('node:crypto').webcrypto })
   const request = { items: [{ product_id: '30000000-0000-0000-0000-000000000001', quantity: 2, price: 1, total: 2 }],
     type: 'pickup', paymentMethod: 'qris' }
-  const first = orderAttempt(request, null)
-  assert.equal(orderAttempt(request, first).key, first.key)
-  assert.notEqual(orderAttempt({ ...request, items: [{ ...request.items[0], quantity: 3 }] }, first).key, first.key)
+  const first = { key: require('node:crypto').randomUUID() }
   let sent
   const client = { rpc: async (name, args) => {
     assert.equal(name, 'create_order'); sent = args
@@ -115,4 +113,159 @@ test('checkout transmits no prices, uses trusted total, and never falls back to 
   assert.equal(sent.p_shop_id, 'shop-a')
   await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ error: { message: 'missing RPC' } }) }, request, first.key))
   await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ data: { id: 'bad', total: 1 } }) }, request, first.key))
+  await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ error: { code: '22023', message: 'Invalid quantity' } }) }, request, first.key), (cause) => cause instanceof OrderRejectedError)
+  await assert.rejects(() => createTrustedOrder({ rpc: async () => ({ error: { code: '22023', message: 'Request key already used for a different order' } }) }, request, first.key),
+    (cause) => !(cause instanceof OrderRejectedError))
+})
+
+function pendingHarness() {
+  const values = new Map()
+  const held = new Set()
+  class OrderRejectedError extends Error {}
+  let submissions = 0
+  let fail = false
+  let release
+  let gate = null
+  const storage = {
+    getItem: (key) => values.get(key) ?? null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: (key) => values.delete(key),
+  }
+  const globals = {
+    crypto: require('node:crypto').webcrypto, TextEncoder, localStorage: storage,
+    navigator: { locks: { request: async (key, options, action) => {
+      assert.equal(options.ifAvailable, true)
+      if (held.has(key)) return action(null)
+      held.add(key)
+      try { return await action({ name: key }) }
+      finally { held.delete(key) }
+    } } },
+  }
+  const client = { from: () => {
+    const query = {
+      select: () => query, eq: () => query,
+      single: async () => ({ data: { status: 'pending', payment_status: 'pending', payment_method: 'qris' } }),
+      maybeSingle: async () => ({ data: { id: 'order-1', total: 25000, status: 'pending', payment_status: 'pending', payment_method: 'qris' } }),
+    }
+    return query
+  } }
+  function reload() {
+    return load('lib/orders/pending-order.ts', {
+      '@/lib/utils/constants': { SHOP_ID: 'shop-a' },
+      './create-order': { OrderRejectedError, createTrustedOrder: async (supabase, request, key) => {
+        submissions++
+        if (gate) await gate
+        if (fail === 'rejected') throw new OrderRejectedError('invalid input')
+        if (fail) throw new Error('lost response')
+        return { id: key, total: 25000 }
+      } },
+    }, globals)
+  }
+  const request = { items: [{ product_id: 'product-a', quantity: 1 }], type: 'pickup', paymentMethod: 'qris' }
+  return { reload, request, client, values, globals,
+    count: () => submissions,
+    fail: (value) => { fail = value },
+    pause: () => { gate = new Promise((resolve) => { release = resolve }) },
+    resume: () => { release(); gate = null },
+  }
+}
+
+test('lost responses preserve a durable key across reloads, with account and POS isolation', async () => {
+  const h = pendingHarness()
+  h.fail(true)
+  await assert.rejects(() => h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request), /lost response/)
+  const saved = JSON.parse([...h.values.values()][0])
+  assert.ok(saved.key)
+  assert.ok(!JSON.stringify(saved).includes('product-a'))
+  h.fail(false)
+  const resumed = await h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request)
+  assert.equal(resumed.id, saved.key)
+  const otherUser = await h.reload().placePendingOrder(h.client, 'user-b', 'customer', h.request)
+  const pos = await h.reload().placePendingOrder(h.client, 'user-a', 'pos', h.request)
+  assert.notEqual(otherUser.id, saved.key)
+  assert.notEqual(pos.id, saved.key)
+  await assert.rejects(() => h.reload().placePendingOrder(h.client, 'user-a', 'customer', { ...h.request, notes: 'changed' }), /belum selesai/)
+  assert.equal(h.count(), 4)
+})
+
+test('two tabs cannot submit concurrently; stale cleanup cannot remove a newer attempt', async () => {
+  const h = pendingHarness()
+  h.pause()
+  const first = h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request)
+  await assert.rejects(() => h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request), /tab lain/)
+  h.resume()
+  const order = await first
+  assert.equal(h.count(), 1)
+  await h.reload().finishPendingOrder('user-a', 'customer', 'stale-key')
+  assert.equal(h.values.size, 1)
+  const recovered = await h.reload().recoverPendingOrder(h.client, 'user-a', 'customer')
+  assert.equal(recovered.attemptKey, order.attemptKey)
+  await h.reload().finishPendingOrder('user-a', 'customer', order.attemptKey)
+  assert.equal(h.values.size, 0)
+  const next = await h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request)
+  assert.notEqual(next.attemptKey, order.attemptKey)
+})
+
+test('unavailable storage, malformed attempts and unsupported tab coordination fail before submission', async () => {
+  for (const mode of ['storage', 'corrupt', 'locks']) {
+    const h = pendingHarness()
+    if (mode === 'storage') h.globals.localStorage.setItem = () => { throw new Error('storage blocked') }
+    if (mode === 'locks') h.globals.navigator.locks = undefined
+    if (mode === 'corrupt') h.values.set('tcs-order-attempt:v1:shop-a:user-a:customer', '{broken')
+    await assert.rejects(() => h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request))
+    assert.equal(h.count(), 0)
+  }
+})
+
+test('payment confirmation updates only pending unpaid orders and accepts prior success without rewriting it', async () => {
+  const { confirmOrderPayment } = load('lib/orders/confirm-payment.ts', {
+    '@/lib/utils/constants': { SHOP_ID: 'shop-a' },
+  })
+  let state = { id: 'order-a', status: 'pending', payment_status: 'pending' }
+  let writes = 0
+  const client = { from: (table) => {
+    assert.equal(table, 'orders')
+    let mutation = null
+    const filters = {}
+    const query = {
+      update: (value) => { mutation = value; return query },
+      select: () => query,
+      eq: (key, value) => { filters[key] = value; return query },
+      maybeSingle: async () => {
+        assert.equal(filters.shop_id, 'shop-a')
+        assert.equal(filters.id, 'order-a')
+        if (!mutation) return { data: state }
+        assert.equal(filters.status, 'pending')
+        assert.equal(filters.payment_status, 'pending')
+        if (state && state.status === filters.status && state.payment_status === filters.payment_status) {
+          writes++
+          state = { ...state, ...mutation }
+          return { data: state }
+        }
+        return { data: null }
+      },
+    }
+    return query
+  } }
+  const [first, second] = await Promise.all([confirmOrderPayment(client, 'order-a'), confirmOrderPayment(client, 'order-a')])
+  assert.equal(first.payment_status, 'paid')
+  assert.equal(second.payment_status, 'paid')
+  assert.equal(writes, 1)
+  state.status = 'preparing'
+  assert.equal((await confirmOrderPayment(client, 'order-a')).status, 'preparing')
+  assert.equal(writes, 1)
+  state = null
+  await assert.rejects(() => confirmOrderPayment(client, 'order-a'))
+  state = { id: 'order-a', status: 'cancelled', payment_status: 'paid' }
+  await assert.rejects(() => confirmOrderPayment(client, 'order-a'))
+})
+
+test('definite transaction rejection releases the attempt for corrected input', async () => {
+  const h = pendingHarness()
+  h.fail('rejected')
+  await assert.rejects(() => h.reload().placePendingOrder(h.client, 'user-a', 'customer', h.request), /invalid input/)
+  assert.equal(h.values.size, 0)
+  h.fail(false)
+  await h.reload().placePendingOrder(h.client, 'user-a', 'customer', { ...h.request, notes: 'corrected' })
+  assert.equal(h.count(), 2)
 })

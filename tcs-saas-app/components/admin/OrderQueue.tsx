@@ -17,6 +17,7 @@ interface Order {
 }
 
 interface OrderQueueProps {
+  busyIds?: ReadonlySet<string>
   orders: Order[]
   onStatusChange: (id: string, status: OrderStatus) => void
   onConfirmPayment: (id: string) => void
@@ -29,7 +30,7 @@ const columns: { status: OrderStatus; label: string }[] = [
   { status: 'ready',     label: 'Siap Diambil' },
 ]
 
-export default function OrderQueue({ orders, onStatusChange, onConfirmPayment }: OrderQueueProps) {
+export default function OrderQueue({ orders, onStatusChange, onConfirmPayment, busyIds }: OrderQueueProps) {
   return (
     <div className="grid grid-cols-4 gap-4">
       {columns.map((col) => {
@@ -46,6 +47,7 @@ export default function OrderQueue({ orders, onStatusChange, onConfirmPayment }:
               <OrderCard
                 key={order.id}
                 {...order}
+                isBusy={busyIds?.has(order.id)}
                 onStatusChange={onStatusChange}
                 onConfirmPayment={onConfirmPayment}
               />

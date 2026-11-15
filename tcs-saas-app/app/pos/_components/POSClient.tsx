@@ -1,9 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { SHOP_ID } from '@/lib/utils/constants'
-import { createTrustedOrder, orderAttempt, type OrderAttempt, type OrderRequest } from '@/lib/orders/create-order'
+import type { OrderRequest } from '@/lib/orders/create-order'
+import { placePendingOrder, recoverPendingOrder, finishPendingOrder } from '@/lib/orders/pending-order'
+import { confirmOrderPayment } from '@/lib/orders/confirm-payment'
 import MenuGrid from '@/components/pos/MenuGrid'
 import OrderBuilder from '@/components/pos/OrderBuilder'
 import dynamic from 'next/dynamic'
@@ -39,8 +40,38 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [orderTotal, setOrderTotal] = useState(0)
-  const attempt = useRef<OrderAttempt | null>(null)
+  const pending = useRef<{ userId: string; key: string } | null>(null)
+  const confirming = useRef(false)
+  const [initializing, setInitializing] = useState(true)
   const submitting = useRef(false)
+
+  useEffect(() => {
+    let active = true
+    async function recover() {
+      try {
+        const supabase = createClient()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) throw new Error('Sesi berakhir. Silakan masuk kembali.')
+        if (!active) return
+        const previous = await recoverPendingOrder(supabase, user.id, 'pos')
+        if (!active) return
+        if (previous) {
+          if (previous.payment_status === 'paid' || previous.status === 'cancelled') {
+            await finishPendingOrder(user.id, 'pos', previous.attemptKey)
+          } else {
+            pending.current = { userId: user.id, key: previous.attemptKey }
+            setOrderId(previous.id)
+            setOrderTotal(previous.total)
+          }
+        }
+        setInitializing(false)
+      } catch (cause) {
+        if (active) setError(cause instanceof Error ? cause.message : 'Gagal memeriksa checkout.')
+      }
+    }
+    void recover()
+    return () => { active = false }
+  }, [])
 
   function addProduct(product: GridProduct) {
     setItems((prev) => {
@@ -51,7 +82,7 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
   }
 
   async function handleCheckout() {
-    if (items.length === 0 || submitting.current || orderId) return
+    if (initializing || items.length === 0 || submitting.current || orderId) return
     submitting.current = true
     setLoading(true)
     setError(null)
@@ -63,8 +94,14 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
         items: items.map((item) => ({ product_id: item.productId, quantity: item.quantity })),
         type: 'pickup', paymentMethod: 'qris',
       }
-      attempt.current = orderAttempt(request, attempt.current)
-      const order = await createTrustedOrder(supabase, request, attempt.current.key)
+      const order = await placePendingOrder(supabase, user.id, 'pos', request)
+      pending.current = { userId: user.id, key: order.attemptKey }
+      if (order.payment_status === 'paid' || order.status === 'cancelled') {
+        await finishPendingOrder(user.id, 'pos', order.attemptKey)
+        setItems([])
+        pending.current = null
+        return
+      }
       setOrderId(order.id)
       setOrderTotal(order.total)
       setShowQRIS(true)
@@ -77,23 +114,23 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
   }
 
   async function handleConfirm() {
-    if (!orderId) return
+    if (!orderId || confirming.current) return
+    confirming.current = true
     setLoading(true)
     setError(null)
     try {
       const supabase = createClient()
-      const { error: updateError } = await supabase.from('orders')
-        .update({ payment_status: 'paid', status: 'confirmed' }).eq('id', orderId).eq('shop_id', SHOP_ID)
-        .select('id').single()
-      if (updateError) throw new Error('Gagal konfirmasi pembayaran. Periksa sesi dan coba lagi.')
+      await confirmOrderPayment(supabase, orderId)
+      if (pending.current) await finishPendingOrder(pending.current.userId, 'pos', pending.current.key)
       setItems([])
       setOrderId(null)
       setShowQRIS(false)
-      attempt.current = null
+      pending.current = null
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Gagal konfirmasi pembayaran')
       setShowQRIS(false)
     } finally {
+      confirming.current = false
       setLoading(false)
     }
   }
@@ -108,13 +145,13 @@ export default function POSClient({ products }: { products: DBProduct[] }) {
 
   return (
     <div className="min-h-dvh bg-brand-bg flex">
-      <fieldset disabled={Boolean(orderId) || loading} className="flex-1 min-w-0 overflow-y-auto">
+      <fieldset disabled={initializing || Boolean(orderId) || loading} className="flex-1 min-w-0 overflow-y-auto">
         <MenuGrid products={gridProducts} onSelect={addProduct} />
       </fieldset>
       <div className="w-72 shrink-0">
         {error && <p role="alert" className="p-4 text-red-400 text-sm">{error}</p>}
         {orderId && !showQRIS && <button className="p-4 text-brand-accent" onClick={() => setShowQRIS(true)}>Lanjutkan pembayaran</button>}
-        <fieldset disabled={Boolean(orderId) || loading}>
+        <fieldset disabled={initializing || Boolean(orderId) || loading}>
           <OrderBuilder
             items={items}
             onIncrement={(id) => setItems((prev) => prev.map((i) => i.productId === id ? { ...i, quantity: i.quantity + 1 } : i))}

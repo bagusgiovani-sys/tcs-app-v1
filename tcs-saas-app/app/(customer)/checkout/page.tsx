@@ -1,10 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/lib/stores/cart'
 import { createClient } from '@/lib/supabase/client'
-import { createTrustedOrder, orderAttempt, type OrderAttempt, type OrderRequest } from '@/lib/orders/create-order'
+import type { OrderRequest } from '@/lib/orders/create-order'
+import { placePendingOrder, recoverPendingOrder, finishPendingOrder } from '@/lib/orders/pending-order'
 import dynamic from 'next/dynamic'
 const QRISDisplay = dynamic(() => import('@/components/customer/QRISDisplay'), { ssr: false })
 import Button from '@/components/ui/Button'
@@ -26,13 +27,44 @@ export default function CheckoutPage() {
   const [notes, setNotes]               = useState('')
   const [orderId, setOrderId]           = useState<string | null>(null)
   const [orderTotal, setOrderTotal] = useState(0)
-  const attempt = useRef<OrderAttempt | null>(null)
+  const pending = useRef<{ userId: string; key: string } | null>(null)
+  const [initializing, setInitializing] = useState(true)
   const submitting = useRef(false)
   const [loading, setLoading]           = useState(false)
   const [error, setError]               = useState<string | null>(null)
 
+  useEffect(() => {
+    let active = true
+    async function recover() {
+      try {
+        const supabase = createClient()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (authError || !user) { router.replace('/auth/login?redirectTo=/checkout'); return }
+        if (!active) return
+        const previous = await recoverPendingOrder(supabase, user.id, 'customer')
+        if (!active) return
+        if (previous) {
+          pending.current = { userId: user.id, key: previous.attemptKey }
+          if (previous.payment_status === 'paid' || previous.status === 'cancelled' || previous.payment_method === 'cash') {
+            clear()
+            await finishPendingOrder(user.id, 'customer', previous.attemptKey)
+            router.replace(`/order/${previous.id}`)
+            return
+          }
+          setOrderId(previous.id)
+          setOrderTotal(previous.total)
+        }
+        setInitializing(false)
+      } catch (cause) {
+        if (active) setError(cause instanceof Error ? cause.message : 'Gagal memeriksa checkout.')
+      }
+    }
+    void recover()
+    return () => { active = false }
+  }, [router, clear])
+
   async function handlePlaceOrder() {
-    if (submitting.current || items.length === 0) return
+    if (initializing || submitting.current || items.length === 0) return
     submitting.current = true
     setLoading(true)
     setError(null)
@@ -46,12 +78,13 @@ export default function CheckoutPage() {
         type: orderType, paymentMethod, tableNumber: orderType === 'dine_in' ? tableNumber : null,
         notes: notes || null,
       }
-      attempt.current = orderAttempt(request, attempt.current)
-      const order = await createTrustedOrder(supabase, request, attempt.current.key)
+      const order = await placePendingOrder(supabase, user.id, 'customer', request)
+      pending.current = { userId: user.id, key: order.attemptKey }
       setOrderTotal(order.total)
 
-      if (paymentMethod === 'cash') {
+      if (order.payment_status === 'paid' || order.status === 'cancelled' || order.payment_method === 'cash') {
         clear()
+        await finishPendingOrder(user.id, 'customer', order.attemptKey)
         router.push(`/order/${order.id}`)
         return
       }
@@ -66,10 +99,15 @@ export default function CheckoutPage() {
   }
 
   async function handleConfirmPayment() {
-    if (!orderId) return
+    if (!orderId || submitting.current) return
+    submitting.current = true
     setLoading(true)
     // Customer acknowledgement is not proof of payment. Staff verify receipt.
     clear()
+    if (pending.current) {
+      try { await finishPendingOrder(pending.current.userId, 'customer', pending.current.key) }
+      catch { /* Retaining the key safely resumes this same order on the next visit. */ }
+    }
     router.push(`/order/${orderId}`)
   }
 
@@ -173,8 +211,8 @@ export default function CheckoutPage() {
 
       {error && <p className="text-red-400 text-sm font-sans text-center">{error}</p>}
 
-      <Button fullWidth size="lg" onClick={handlePlaceOrder} disabled={loading || items.length === 0}>
-        {loading
+      <Button fullWidth size="lg" onClick={handlePlaceOrder} disabled={initializing || loading || items.length === 0}>
+        {initializing || loading
           ? 'Memproses...'
           : paymentMethod === 'qris'
             ? 'Lanjut ke QRIS'

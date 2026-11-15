@@ -3,6 +3,7 @@ import OrderStatusBadge from '@/components/customer/OrderStatusBadge'
 type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'
 
 interface OrderCardProps {
+  isBusy?: boolean
   id: string
   orderNumber: string
   customerName: string
@@ -43,7 +44,7 @@ const PAYMENT_LABELS: Record<string, string> = {
 export default function OrderCard({
   id, orderNumber, customerName, type, tableNumber,
   itemCount, total, status, paymentMethod, paymentStatus,
-  createdAt, onStatusChange, onConfirmPayment,
+  createdAt, onStatusChange, onConfirmPayment, isBusy,
 }: OrderCardProps) {
   const next = nextStatus[status]
   const isPaid = paymentStatus === 'paid'
@@ -75,6 +76,7 @@ export default function OrderCard({
         <div className="flex gap-2">
           {needsPaymentConfirm && onConfirmPayment && (
             <button
+              disabled={isBusy}
               onClick={() => onConfirmPayment(id)}
               className="bg-green-500 text-white font-sans font-semibold text-xs px-3 py-1.5 rounded-lg"
             >
@@ -83,6 +85,7 @@ export default function OrderCard({
           )}
           {next && onStatusChange && isPaid && (
             <button
+              disabled={isBusy}
               onClick={() => onStatusChange(id, next)}
               className="bg-brand-accent text-brand-on-accent font-sans font-semibold text-sm px-4 py-1.5 rounded-lg"
             >
