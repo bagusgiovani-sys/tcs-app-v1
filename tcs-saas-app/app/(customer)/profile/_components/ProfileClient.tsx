@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { logout } from '@/lib/actions/auth'
 import { THEME_KEY } from '@/lib/utils/constants'

@@ -5,9 +5,9 @@
   "scripts": {
     "test:security": "node --test tests/security.test.cjs tests/database-security.test.cjs",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run lint && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint --max-warnings 0"
   },
   "dependencies": {
     "@serwist/next": "^9.5.13",

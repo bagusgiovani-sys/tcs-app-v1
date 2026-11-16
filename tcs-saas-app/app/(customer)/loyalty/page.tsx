@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { SHOP_ID } from '@/lib/utils/constants'
 import LoyaltyCard from '@/components/customer/LoyaltyCard'
-import Badge from '@/components/ui/Badge'
 
 interface LoyaltyTx {
   id: string

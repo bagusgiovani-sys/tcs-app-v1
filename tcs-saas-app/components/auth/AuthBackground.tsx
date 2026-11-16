@@ -124,9 +124,9 @@ export default function AuthBackground({ children }: { children: React.ReactNode
             className="absolute"
             style={{
               top: f.top,
-              left: (f as any).left,
-              right: (f as any).right,
-              bottom: (f as any).bottom,
+              left: f.left,
+              right: f.right,
+              bottom: f.bottom,
               animation: `authBob ${f.bobMs}ms ease-in-out ${f.bobDelay}ms infinite alternate`,
             }}
           >

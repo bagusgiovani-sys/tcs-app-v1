@@ -164,7 +164,7 @@ Work through the following gates in order. Local lint/dependency cleanup can pro
 - [ ] Rerun the dependency audit, patch compatible affected packages and record the disposition of each remaining finding; do not treat the old count as current.
 - [ ] Resolve tenant storage-path permissions and verify access with cross-shop identities.
 - [ ] Establish and test rate limits, security-event logging/alerts, hosting access controls and backup recovery. Record any remaining CSP hardening decision.
-- [ ] Resolve full-project lint failures and warnings; resolve the workspace tracing-root warning and make source lint an explicit release check.
+- [x] Resolve full-project lint failures and warnings; resolve the workspace tracing-root warning and make source lint an explicit release check. Completed locally 2026-11-16; see follow-up below.
 - [ ] Run `npm run test:security`, full lint, production build and TypeScript sequentially where generated build types are involved; include the dedicated service-worker type check. Record exact commands/results and the tested commit.
 
 **Done when:** release checks pass, security findings have documented dispositions, and there are no unresolved release blockers.
@@ -204,3 +204,14 @@ Work through the following gates in order. Local lint/dependency cleanup can pro
 - [ ] Hosted staging verification and real multi-tab browser acceptance remain pending. No migration, merge or deployment performed.
 
 See [duplicate-submission details and limits](docs/trusted-orders-rollout.md#duplicate-submission-follow-up-2026-11-15). Static QRIS still relies on staff verification and cannot prevent repeated transfers inside an external wallet.
+
+### 2026-11-16 implementation follow-up: local release checks
+
+- Replaced animation `any` casts with typed splash CSS variables and inferred floater positioning; removed three unused imports. Full lint now enforces zero warnings and runs before production builds; the Next.js build lint bypass was removed.
+- Set the application directory as `outputFileTracingRoot`, eliminating the inferred workspace-root warning. Installed Next.js 15.5.29 does not ship the `node_modules/next/dist/docs/` directory referenced by AGENTS.md; the configuration option was checked against installed Next.js types and verified by a production build.
+- Applied compatible dependency fixes with package lifecycle scripts disabled, then refreshed brace-expansion. No forced major upgrades or cross-major overrides were applied. The fresh final audit reports **14 findings (5 high, 9 moderate)**, versus 18 initially. Counts can change as registry advisories change; see [audit evidence and disposition](docs/dependency-cleanup-2026-11-16.md).
+- Validation against base commit `eb7c26c` plus the uncommitted cleanup: `npm.cmd run test:security` passed all 19; `npm.cmd run build` passed (including full zero-warning lint, app type checking and service-worker compilation); `npx.cmd tsc --noEmit --incremental false` passed after build; dedicated service-worker check `npx.cmd tsc --noEmit --skipLibCheck --target ES2017 --module esnext --moduleResolution bundler --lib ESNext,WebWorker app/sw.ts` passed. The final brace-expansion patch followed the build; final lint and diff checks are recorded with delivery.
+- Existing local settings and tsconfig edits were preserved. ProductCard has no content diff from HEAD.
+- No hosted database changes, staging/browser acceptance, deployment, merge or incident-account actions were performed. Dependency findings remain a release blocker.
+
+**Next concrete action:** resolve the remaining dependency upgrade decisions, establish incident follow-up status and identify isolated staging, then perform the read-only database inventory described in the rollout guide.

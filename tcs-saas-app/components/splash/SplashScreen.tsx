@@ -45,6 +45,17 @@ export type SplashScreenProps = {
   children?: React.ReactNode;
 };
 
+type SplashStyle = React.CSSProperties & {
+  "--rot"?: string;
+  "--collapse-x"?: string;
+  "--collapse-y"?: string;
+  "--collapse-r"?: string;
+};
+
+function splashStyle(style: SplashStyle): React.CSSProperties {
+  return style;
+}
+
 const STORAGE_KEY = "tcs-splash-seen";
 
 /** Stable pseudo-random for scattered bean positions */
@@ -257,15 +268,15 @@ export default function SplashScreen({
               <div
                 key={`bb-${i}`}
                 className={`${styles.abs} ${styles.paperSm} ${styles.float} ${styles.collapsible}`}
-                style={{
+                style={splashStyle({
                   left: `${b.x}%`, top: `${b.y}%`,
                   transform: "translate(-50%, -50%) translateZ(-40px)",
-                  ["--rot" as any]: `${b.rot}deg`,
-                  ["--collapse-x" as any]: b.cx,
-                  ["--collapse-y" as any]: b.cy,
-                  ["--collapse-r" as any]: b.cr,
+                  "--rot": `${b.rot}deg`,
+                  "--collapse-x": b.cx,
+                  "--collapse-y": b.cy,
+                  "--collapse-r": b.cr,
                   animationDelay: `${b.delay}s`,
-                }}
+                })}
               >
                 <CoffeeBean size={56 * b.scale} rotate={b.rot} ink="#2D1810" body="#3A1F12" hl="#C8956D" />
               </div>
@@ -274,15 +285,15 @@ export default function SplashScreen({
             {/* V60 — top-left */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 left: "16%", top: "26%",
-                ["--rot" as any]: "-6deg",
+                "--rot": "-6deg",
                 transform: "translate(-50%, -50%) rotate(-6deg) translateZ(60px)",
-                ["--collapse-x" as any]: "30vw",
-                ["--collapse-y" as any]: "20vh",
-                ["--collapse-r" as any]: "-540deg",
+                "--collapse-x": "30vw",
+                "--collapse-y": "20vh",
+                "--collapse-r": "-540deg",
                 animationDelay: "0.2s",
-              }}
+              })}
             >
               <V60 size={Math.min(280, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.22)} />
             </div>
@@ -290,15 +301,15 @@ export default function SplashScreen({
             {/* Kettle — top-right */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 right: "12%", top: "22%", left: "auto",
-                ["--rot" as any]: "8deg",
+                "--rot": "8deg",
                 transform: "translate(50%, -50%) rotate(8deg) translateZ(70px)",
-                ["--collapse-x" as any]: "-30vw",
-                ["--collapse-y" as any]: "20vh",
-                ["--collapse-r" as any]: "480deg",
+                "--collapse-x": "-30vw",
+                "--collapse-y": "20vh",
+                "--collapse-r": "480deg",
                 animationDelay: "1.1s",
-              }}
+              })}
             >
               <Kettle size={Math.min(300, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.24)} />
             </div>
@@ -306,15 +317,15 @@ export default function SplashScreen({
             {/* Moka — bottom-left */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 left: "16%", bottom: "16%", top: "auto",
-                ["--rot" as any]: "5deg",
+                "--rot": "5deg",
                 transform: "translate(-50%, 50%) rotate(5deg) translateZ(50px)",
-                ["--collapse-x" as any]: "30vw",
-                ["--collapse-y" as any]: "-20vh",
-                ["--collapse-r" as any]: "-420deg",
+                "--collapse-x": "30vw",
+                "--collapse-y": "-20vh",
+                "--collapse-r": "-420deg",
                 animationDelay: "1.8s",
-              }}
+              })}
             >
               <MokaPot size={Math.min(240, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.2)} />
             </div>
@@ -322,15 +333,15 @@ export default function SplashScreen({
             {/* Bag — bottom-right */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 right: "14%", bottom: "16%", top: "auto", left: "auto",
-                ["--rot" as any]: "-6deg",
+                "--rot": "-6deg",
                 transform: "translate(50%, 50%) rotate(-6deg) translateZ(60px)",
-                ["--collapse-x" as any]: "-30vw",
-                ["--collapse-y" as any]: "-20vh",
-                ["--collapse-r" as any]: "520deg",
+                "--collapse-x": "-30vw",
+                "--collapse-y": "-20vh",
+                "--collapse-r": "520deg",
                 animationDelay: "2.4s",
-              }}
+              })}
             >
               <CoffeeBag size={Math.min(220, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.18)} />
             </div>
@@ -338,15 +349,15 @@ export default function SplashScreen({
             {/* Espresso — bottom-center */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 left: "50%", bottom: "8%", top: "auto",
-                ["--rot" as any]: "0deg",
+                "--rot": "0deg",
                 transform: "translate(-50%, 0) translateZ(90px)",
-                ["--collapse-x" as any]: "0",
-                ["--collapse-y" as any]: "-32vh",
-                ["--collapse-r" as any]: "360deg",
+                "--collapse-x": "0",
+                "--collapse-y": "-32vh",
+                "--collapse-r": "360deg",
                 animationDelay: "0.6s",
-              }}
+              })}
             >
               <EspressoCup size={Math.min(220, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.18)} />
             </div>
@@ -354,15 +365,15 @@ export default function SplashScreen({
             {/* Mug — top-center */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 left: "50%", top: "8%",
-                ["--rot" as any]: "-3deg",
+                "--rot": "-3deg",
                 transform: "translate(-50%, 0) rotate(-3deg) translateZ(40px)",
-                ["--collapse-x" as any]: "0",
-                ["--collapse-y" as any]: "32vh",
-                ["--collapse-r" as any]: "-300deg",
+                "--collapse-x": "0",
+                "--collapse-y": "32vh",
+                "--collapse-r": "-300deg",
                 animationDelay: "1.4s",
-              }}
+              })}
             >
               <Mug size={Math.min(180, (typeof window !== "undefined" ? window.innerWidth : 1200) * 0.15)} />
             </div>
@@ -370,29 +381,29 @@ export default function SplashScreen({
             {/* Comic labels */}
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 left: "8%", top: "62%",
-                ["--rot" as any]: "-12deg",
+                "--rot": "-12deg",
                 transform: "translate(-50%, -50%) translateZ(130px) rotate(-12deg)",
-                ["--collapse-x" as any]: "32vw",
-                ["--collapse-y" as any]: "-8vh",
-                ["--collapse-r" as any]: "-720deg",
+                "--collapse-x": "32vw",
+                "--collapse-y": "-8vh",
+                "--collapse-r": "-720deg",
                 animationDelay: "0.4s",
-              }}
+              })}
             >
               <ComicBurst text="BREW!" size={150} fill="#F4B942" />
             </div>
             <div
               className={`${styles.abs} ${styles.paper} ${styles.float} ${styles.collapsible}`}
-              style={{
+              style={splashStyle({
                 right: "8%", top: "58%", left: "auto",
-                ["--rot" as any]: "10deg",
+                "--rot": "10deg",
                 transform: "translate(50%, -50%) translateZ(120px) rotate(10deg)",
-                ["--collapse-x" as any]: "-32vw",
-                ["--collapse-y" as any]: "-8vh",
-                ["--collapse-r" as any]: "720deg",
+                "--collapse-x": "-32vw",
+                "--collapse-y": "-8vh",
+                "--collapse-r": "720deg",
                 animationDelay: "1.6s",
-              }}
+              })}
             >
               <ComicBurst text="POP!" size={130} fill="#FF5E5E" textColor="#FFF6E0" />
             </div>
@@ -402,15 +413,15 @@ export default function SplashScreen({
               <div
                 key={`bf-${i}`}
                 className={`${styles.abs} ${styles.paperSm} ${styles.float} ${styles.collapsible}`}
-                style={{
+                style={splashStyle({
                   left: `${b.x}%`, top: `${b.y}%`,
                   transform: "translate(-50%, -50%) translateZ(110px)",
-                  ["--rot" as any]: `${b.rot}deg`,
-                  ["--collapse-x" as any]: b.cx,
-                  ["--collapse-y" as any]: b.cy,
-                  ["--collapse-r" as any]: b.cr,
+                  "--rot": `${b.rot}deg`,
+                  "--collapse-x": b.cx,
+                  "--collapse-y": b.cy,
+                  "--collapse-r": b.cr,
                   animationDelay: `${b.delay}s`,
-                }}
+                })}
               >
                 <CoffeeBean size={64 * b.scale} rotate={b.rot} ink="#2D1810" body="#3A1F12" hl="#C8956D" />
               </div>

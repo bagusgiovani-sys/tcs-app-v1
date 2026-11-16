@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import path from 'node:path'
 import withSerwistInit from '@serwist/next'
 
 const withSerwist = withSerwistInit({
@@ -30,7 +31,7 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
-  eslint: { ignoreDuringBuilds: true },
+  outputFileTracingRoot: path.resolve(__dirname),
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
