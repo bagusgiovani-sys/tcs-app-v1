@@ -215,3 +215,13 @@ See [duplicate-submission details and limits](docs/trusted-orders-rollout.md#dup
 - No hosted database changes, staging/browser acceptance, deployment, merge or incident-account actions were performed. Dependency findings remain a release blocker.
 
 **Next concrete action:** resolve the remaining dependency upgrade decisions, establish incident follow-up status and identify isolated staging, then perform the read-only database inventory described in the rollout guide.
+
+### 2026-11-16 follow-up: remove remaining high dependency findings
+
+- Base commit `e75f37c`; follow-up changes are uncommitted. Added same-major npm overrides for PostCSS 8.5.33 and Serwist's Zod 4.6.7; Next.js and Serwist versions are unchanged. Package lifecycle scripts stayed disabled.
+- Verified `npm.cmd ls postcss zod`: all consumers resolve patched versions with no invalid dependencies; the old nested Next.js PostCSS entry is removed from the lockfile.
+- Fresh audit: **11 moderate, zero high/critical**. The install summary reported 10; the saved fresh audit is authoritative. Remaining findings are Glob/Minimatch and affected parent tooling; their available fixes cross dependency major versions and remain open release work. See [follow-up evidence and disposition](docs/dependency-cleanup-2026-11-16.md#same-major-security-patch-follow-up).
+- Validation: `npm.cmd run test:security` passed 19 tests; `npm.cmd run build` passed with zero-warning lint, application type checking and service-worker compilation. Post-build application and worker TypeScript checks and `git diff --check` are part of this delivery.
+- Existing local settings and tsconfig edits were preserved. No hosted database, migration, browser acceptance or deployment action was performed. Incident follow-up status and isolated staging identification remain pending user details.
+
+**Next concrete action:** review cross-major Glob/Minimatch compatibility, then run isolated staging inventory once incident follow-up and staging identity are established.
