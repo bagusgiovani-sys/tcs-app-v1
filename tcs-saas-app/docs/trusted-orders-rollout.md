@@ -14,7 +14,9 @@ The `security/trusted-orders` branch changes customer checkout and POS to call t
 
 ## Validation
 
-Run `npm run test:security`. The suite includes nine isolated PostgreSQL tests using PGlite plus five application tests. It starts from the checked-in base schema, models permissive Supabase grants/legacy policies, and uses actual anonymous/authenticated database roles with different simulated user claims.
+**Current local status (2026-11-19):** all 19 security tests pass. Full-project zero-warning lint, application type checks, the dedicated service-worker type check and the production build pass. The updated dependency tree has zero reported vulnerabilities in a fresh full npm audit; see [dependency cleanup](dependency-cleanup-2026-11-16.md). These results supersede the historical lint/build/dependency findings below. Hosted acceptance and migration status remain unverified.
+
+Run `npm run test:security`. The suite includes nine isolated PostgreSQL tests using PGlite plus ten application tests. It starts from the checked-in base schema, models permissive Supabase grants/legacy policies, and uses actual anonymous/authenticated database roles with different simulated user claims.
 
 Local results: 14 tests passed. Project TypeScript and ESLint for all changed files passed. The Next.js 15.5.29 production build completed successfully and generated all 19 pages. Full-project ESLint still reports 43 explicit-any errors and 3 warnings in untouched auth/splash/UI files; two order-queue typing errors were fixed in this branch. The existing build configuration skips ESLint and still warns about the parent workspace lockfile.
 
