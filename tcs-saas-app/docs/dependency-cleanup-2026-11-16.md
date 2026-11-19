@@ -1,6 +1,6 @@
 # Dependency cleanup, 2026-11-16
 
-**Latest follow-up:** same-major overrides now remove the PostCSS and Zod findings. The fresh [follow-up audit](dependency-audit-2026-11-16-patches.json) reports **11 moderate findings, zero high or critical**. The original cleanup record below remains as historical evidence; its PostCSS/Zod dispositions are superseded by this follow-up.
+**Latest follow-up (2026-11-19):** upstream Serwist and typescript-eslint updates resolve the remaining findings. The fresh [audit](dependency-audit-2026-11-19.json) reports **zero vulnerabilities**. See the final section for changes and validation. Earlier counts and dispositions below are historical evidence.
 
 Local checkout: base `eb7c26c` plus the uncommitted cleanup. This is local validation; staging and production remain unverified.
 
@@ -28,3 +28,22 @@ The [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) identifies
 The fresh audit is the recorded result (11 moderate); npm's install summary reported 10. All remaining findings arise from Glob/Minimatch and affected parent tooling. The [Glob advisory](https://github.com/advisories/GHSA-3g3m-2fjr-6pw4) identifies 14.0.2 as fixed, and the [Minimatch advisory](https://github.com/advisories/GHSA-g3hv-75wg-m249) identifies 11.0.1. The installed consumers require Glob 13 and Minimatch 10, so resolving these findings requires separate cross-major compatibility work. No cross-major overrides, framework upgrade or Serwist downgrade were applied.
 
 Validation after both patches: all 19 security tests, production build (including zero-warning lint, app types and service-worker bundling), application TypeScript, dedicated service-worker TypeScript, and `git diff --check`. Hosted browser/API acceptance is pending; no migration or deployment was performed.
+
+## Upstream dependency fixes (2026-11-19)
+
+Base revision: `2b732ae`. A fresh audit before this update reported 10 moderate findings; all were now fixable through upstream releases. Updated `@serwist/next` and `serwist` from 9.5.13 to 9.5.15, and aligned the transitive typescript-eslint parser/plugin family at 8.73.0 within eslint-config-next's existing ranges. Next.js and eslint-config-next remain at 15.5.29.
+
+Serwist now requires Glob 14.0.6 and patched Zod directly. Both Glob and typescript-eslint resolve Minimatch 11.0.9. These transitive major changes are selected by upstream packages, with no cross-major override added. Removed the three Zod overrides because Serwist now requires `~4.6.7`; the installed version remains 4.6.7. Kept the PostCSS 8.5.33 override until Next.js updates its dependency pin. The lockfile also refreshes browser compatibility metadata and deduplicates the parser's former nested dependencies.
+
+Package versions and dependency ranges were checked with `npm view` before installation. Updated with `npm.cmd update @serwist/next serwist @typescript-eslint/parser @typescript-eslint/eslint-plugin --ignore-scripts`; lifecycle scripts were disabled. A full-tree check then identified missing lockfile entries for bundled dependencies of Tailwind's optional wasm32 package. `npm.cmd install --package-lock-only --ignore-scripts` restored those entries; no installed application packages changed in that step. A separate `npm.cmd audit --json` against the final lockfile completed with exit 0 and zero findings across production and development dependencies; the full response is saved in [the audit JSON](dependency-audit-2026-11-19.json).
+
+Validation on Node.js 22.20.0:
+
+- `npm.cmd ls glob minimatch zod @typescript-eslint/parser @typescript-eslint/eslint-plugin`: passed with the expected patched versions and no invalid dependencies.
+- `npm.cmd ls --all --parseable`: passed after restoring the optional bundled dependency metadata.
+- `npm.cmd run test:security`: all 19 tests passed.
+- `npm.cmd run build`: passed, including full zero-warning lint, application type checks, service-worker bundling and all 19 pages.
+- `node node_modules/typescript/bin/tsc --noEmit --incremental false`: passed after the build.
+- `node node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target ES2017 --module esnext --moduleResolution bundler --lib esnext,webworker app/sw.ts`: passed.
+
+The audit result closes the recorded dependency findings for this lockfile at this date. Hosted authorization/payment acceptance, the database migration, incident follow-up and deployment remain unverified. The [trusted order rollout](trusted-orders-rollout.md) gates still apply before merging to main.

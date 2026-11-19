@@ -4,33 +4,24 @@
   "private": true,
   "scripts": {
     "test:security": "node --test tests/security.test.cjs tests/database-security.test.cjs",
-    "dev": "next dev",
-    "build": "npm run lint && next build",
-    "start": "next start",
+    "dev": "node init && next dev",
+    "build": "node init && npm run lint && next build",
+    "start": "node init && next start",
     "lint": "eslint --max-warnings 0"
   },
   "dependencies": {
-    "@serwist/next": "^9.5.13",
+    "@serwist/next": "^9.5.15",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.105.4",
     "framer-motion": "^12.38.0",
     "next": "^15.5.29",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "serwist": "^9.5.13",
+    "serwist": "^9.5.15",
     "zustand": "^5.0.13"
   },
   "overrides": {
-    "postcss": "8.5.33",
-    "@serwist/next": {
-      "zod": "4.6.7"
-    },
-    "@serwist/build": {
-      "zod": "4.6.7"
-    },
-    "@serwist/webpack-plugin": {
-      "zod": "4.6.7"
-    }
+    "postcss": "8.5.33"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.16",
